@@ -41,7 +41,7 @@ data class CompletionResp(
 data class ChoiceItem(
     @field:JsonProperty("message") val message: Message,
     @field:JsonProperty("index") val index: Int,
-    @field:JsonProperty("finish_reason") val finishReason: String
+    @field:JsonProperty("finish_reason") val finishReason: String?
 )
 
 

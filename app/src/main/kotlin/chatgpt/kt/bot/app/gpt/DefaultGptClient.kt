@@ -21,10 +21,10 @@ open class DefaultGptClient(
 
     init {
         val b = OkHttpClient().newBuilder()
-            .callTimeout(Duration.ofSeconds(30))
-            .readTimeout(Duration.ofSeconds(30))
-            .writeTimeout(Duration.ofSeconds(30))
-            .connectTimeout(Duration.ofSeconds(30))
+            .callTimeout(Duration.ofMinutes(2))
+            .readTimeout(Duration.ofMinutes(1))
+            .writeTimeout(Duration.ofMinutes(1))
+            .connectTimeout(Duration.ofMinutes(2))
         if (InetAddress.getLocalHost().hostAddress.startsWith("192.168")) {
             b.proxy(Proxy(Proxy.Type.SOCKS, InetSocketAddress("127.0.0.1", 1089)))
         }
