@@ -13,12 +13,14 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
+import mu.KotlinLogging
 
 
 private val client = DefaultGptClient(ChatGptEnvProvider())
 private val channel = Channel<Event>()
 private val slack = Slack.getInstance()
 private val responder = SlashCommandResponseSender(slack)
+private val log = KotlinLogging.logger {}
 
 @OptIn(DelicateCoroutinesApi::class)
 fun main() {
@@ -36,14 +38,17 @@ fun main() {
         ctx.ack()
     }
     val server = SlackAppServer(app, 10003)
-    GlobalScope.launch {
-        receive()
-    }
+    receiver()
     server.start() // http://localhost:3000/slack/events
 }
 
-suspend fun send(event: Event) = run {
-    channel.send(event)
+@OptIn(DelicateCoroutinesApi::class)
+fun send(event: Event) {
+    GlobalScope.launch {
+        kotlin.run {
+            channel.send(event)
+        }
+    }
 }
 
 data class Event(
@@ -51,8 +56,18 @@ data class Event(
     val msg: String,
 )
 
+@OptIn(DelicateCoroutinesApi::class)
+private fun receiver() {
+    GlobalScope.launch {
+        while (true) {
+            receive()
+        }
+    }
+}
+
 suspend fun receive() = run {
     val event = channel.receive()
+    log.info { "Receive: ${event.msg}" }
     val msg = try {
         client.completions(listOf(Message("user", event.msg))).content
     } catch (e: Exception) {
