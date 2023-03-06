@@ -22,7 +22,6 @@ private val slack = Slack.getInstance()
 private val responder = SlashCommandResponseSender(slack)
 private val log = KotlinLogging.logger {}
 
-@OptIn(DelicateCoroutinesApi::class)
 fun main() {
     val app = App()
     app.command("/hello") { req, ctx ->
@@ -69,10 +68,11 @@ suspend fun receive() = run {
     } catch (e: Exception) {
         "开始摆烂..."
     }
-    val reply = SlashCommandResponse.builder().text("""
+    val reply = SlashCommandResponse.builder().text(
+        """
         Prompt: ${event.msg}
         $msg
-    """.trimIndent())
-        .build()
+    """.trimIndent()
+    ).build()
     val response: WebhookResponse = responder.send(event.responseUrl, reply)
 }

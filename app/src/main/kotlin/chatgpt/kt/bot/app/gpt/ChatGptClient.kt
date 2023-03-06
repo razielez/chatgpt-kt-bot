@@ -11,37 +11,37 @@ interface Gpt3Client {
 
 
 data class Message(
-    @field:JsonProperty("role") val role: String,
-    @field:JsonProperty("content") val content: String
+    @JsonProperty("role") val role: String,
+    @JsonProperty("content") val content: String
 )
 
 data class CompletionReq(
-    @field:JsonProperty("model") val model: String,
-    @field:JsonProperty("messages") val message: List<Message>,
-    @field:JsonProperty("max_tokens") val maxToken: Int,
-    @field:JsonProperty("temperature") val temperature: Float,
-    @field:JsonProperty("top_p") val topP: Int = 1,
-    @field:JsonProperty("stream") val stream: Boolean = false,
-    @field:JsonProperty("frequency_penalty") val frequencyPenalty: Int = 0,
-    @field:JsonProperty("presence_penalty") val presencePenalty: Int = 0,
+    @JsonProperty("model") val model: String,
+    @JsonProperty("messages") val message: List<Message>,
+    @JsonProperty("max_tokens") val maxToken: Int,
+    @JsonProperty("temperature") val temperature: Float,
+    @JsonProperty("top_p") val topP: Int = 1,
+    @JsonProperty("stream") val stream: Boolean = false,
+    @JsonProperty("frequency_penalty") val frequencyPenalty: Int = 0,
+    @JsonProperty("presence_penalty") val presencePenalty: Int = 0,
 )
 
 fun Any.toJson(): String = JsonTools.toJson(this)
 
 
 data class CompletionResp(
-    @field:JsonProperty("id") val id: String,
-    @field:JsonProperty("object") val objectStr: String,
-    @field:JsonProperty("created") val createTs: Int,
-    @field:JsonProperty("model") val model: String,
-    @field:JsonProperty("choices") val choices: List<ChoiceItem>,
-    @field:JsonProperty("usage") val usage: Map<String, Any>
+    @JsonProperty("id") val id: String,
+    @JsonProperty("object") val objectStr: String,
+    @JsonProperty("created") val createTs: Int,
+    @JsonProperty("model") val model: String,
+    @JsonProperty("choices") val choices: List<ChoiceItem>,
+    @JsonProperty("usage") val usage: Map<String, Any>
 )
 
 data class ChoiceItem(
-    @field:JsonProperty("message") val message: Message,
-    @field:JsonProperty("index") val index: Int,
-    @field:JsonProperty("finish_reason") val finishReason: String?
+    @JsonProperty("message") val message: Message,
+    @JsonProperty("index") val index: Int,
+    @JsonProperty("finish_reason") val finishReason: String?
 )
 
 
