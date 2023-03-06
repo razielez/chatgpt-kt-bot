@@ -1,0 +1,33 @@
+plugins {
+    id "org.jetbrains.kotlin.jvm" version "$kotlinVersion" apply false
+}
+
+ext {
+    javaLibs = []
+    ktPros = [project(":app")]
+}
+
+configure(ktPros) {
+    project ->
+        {
+            apply plugin: 'org.jetbrains.kotlin.jvm'
+            kotlin {
+                jvmToolchain {
+                    languageVersion.set(JavaLanguageVersion.of(17))
+                }
+            }
+
+            group = "com.razielez"
+
+            dependencies {
+                implementation "org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}"
+                implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}"
+                testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
+            }
+
+            test {
+                useJUnitPlatform()
+                systemProperty("java.awt.headless", "true")
+            }
+        }
+}
