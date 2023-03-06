@@ -70,8 +70,9 @@ suspend fun receive() = run {
         "开始摆烂..."
     }
     val reply = SlashCommandResponse.builder().text("""
-        Prompt: ${event.msg}\n
-        msg
-    """.trimIndent()).build()
+        Prompt: ${event.msg}
+        $msg
+    """.trimIndent())
+        .build()
     val response: WebhookResponse = responder.send(event.responseUrl, reply)
 }
