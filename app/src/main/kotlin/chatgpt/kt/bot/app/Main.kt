@@ -26,15 +26,11 @@ private val log = KotlinLogging.logger {}
 fun main() {
     val app = App()
     app.command("/hello") { req, ctx ->
-        GlobalScope.launch {
-            send(Event(ctx.responseUrl, ":wave: Hello!req: ${req.payload.text}"))
-        }
+        send(Event(ctx.responseUrl, ":wave: Hello!req: ${req.payload.text}"))
         ctx.ack()
     }
     app.command("/ask") { req, ctx ->
-        GlobalScope.launch {
-            send(Event(ctx.responseUrl, req.payload.text))
-        }
+        send(Event(ctx.responseUrl, req.payload.text))
         ctx.ack()
     }
     val server = SlackAppServer(app, 10003)
