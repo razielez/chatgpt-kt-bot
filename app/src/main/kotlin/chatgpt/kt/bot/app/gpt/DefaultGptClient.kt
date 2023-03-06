@@ -1,5 +1,6 @@
 package chatgpt.kt.bot.app.gpt
 
+import chatgpt.kt.bot.app.common.toJson
 import chatgpt.kt.bot.app.utils.JsonTools
 import mu.KotlinLogging
 import okhttp3.OkHttpClient
