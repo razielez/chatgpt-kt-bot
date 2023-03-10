@@ -1,33 +1,31 @@
 plugins {
-    id "application"
     id "org.jetbrains.kotlin.plugin.allopen" version "$kotlinVersion"
     id 'org.jetbrains.kotlin.jvm' version "$kotlinVersion"
+    id("org.springframework.boot") version "$springBootVersion"
 }
 
 dependencies {
+    api(platform('com.fasterxml.jackson:jackson-bom:2.14.2'))
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
-    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.14.2'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:'
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.14.2'
     implementation 'io.github.microutils:kotlin-logging-jvm:3.0.5'
     implementation 'ch.qos.logback:logback-classic:1.4.5'
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
 
     // ------ slack
-    implementation("com.slack.api:bolt:1.27.3")
-    implementation("com.slack.api:bolt-servlet:1.27.3")
-    implementation("com.slack.api:bolt-jetty:1.27.3")
-    implementation("org.slf4j:slf4j-simple:1.7.36")
+    implementation("com.slack.api:bolt:$slackVersion")
+    implementation("com.slack.api:bolt-servlet:$slackVersion")
+    implementation("com.slack.api:bolt-jetty:$slackVersion")
     // ---- slack end
 }
 
-application {
-    mainClassName = "chatgpt.kt.bot.app.MainKt"
+
+tasks.named("bootJar") {
+    archiveFileName = "chatgpt-kt-bot.jar"
 }
 
-
-run {
-    // gradle run -DslackLogLevel=debug
-    systemProperty "org.slf4j.simpleLogger.log.com.slack.api", System.getProperty("slackLogLevel")
+repositories {
+    mavenCentral()
 }
-

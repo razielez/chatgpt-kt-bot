@@ -6,6 +6,8 @@ import chatgpt.kt.bot.app.gpt.Message
 import com.slack.api.Slack
 import com.slack.api.app_backend.slash_commands.SlashCommandResponseSender
 import com.slack.api.app_backend.slash_commands.response.SlashCommandResponse
+import com.slack.api.bolt.response.ResponseTypes
+import com.slack.api.model.Attachment
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
@@ -37,7 +39,12 @@ open class SlackEventConsumer(
                         Prompt: ${event.msg}
                         $msg
                         """.trimIndent()
-                responder.send(event.responseUrl, SlashCommandResponse.builder().text(reply).build())
+                responder.send(
+                    event.responseUrl,
+                    SlashCommandResponse.builder()
+                        .text(reply)
+                        .build()
+                )
             }
         }
     }
