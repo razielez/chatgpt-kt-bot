@@ -4,6 +4,8 @@ import chatgpt.kt.bot.app.infra.event.SlackEvent
 import chatgpt.kt.bot.app.infra.event.EventPublisher
 import com.slack.api.bolt.App
 import com.slack.api.bolt.AppConfig
+import com.slack.api.bolt.handler.BoltEventHandler
+import mu.KotlinLogging
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -12,6 +14,8 @@ open class SlackAppConfig(
     private val eventPublisher: EventPublisher<SlackEvent>,
     private val properties: SlackProperties,
 ) {
+
+    private val log = KotlinLogging.logger { }
 
     @Bean
     open fun slackAppCfg(): AppConfig {
@@ -26,6 +30,7 @@ open class SlackAppConfig(
         val app = App(config)
         config.clientId?.also { app.asOAuthApp(true) }
         app.command("/hello") { req, ctx ->
+            log.info { "receive: $req, ctx: $ctx" }
             val event = SlackEvent(ctx.responseUrl, ":wave: Hello!req: ${req.payload.text}")
             eventPublisher.send(event)
             ctx.ack()
@@ -33,6 +38,11 @@ open class SlackAppConfig(
         app.command("/ask") { req, ctx ->
             val event = SlackEvent(ctx.responseUrl, req.payload.text)
             eventPublisher.send(event)
+            ctx.ack()
+        }
+        app.message("*") {event, ctx->
+            log.info { "receive: $event, ctx: $ctx" }
+            val from = ctx.requestUserId ?: "from"
             ctx.ack()
         }
         return app
