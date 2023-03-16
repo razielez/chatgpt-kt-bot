@@ -1,6 +1,6 @@
-package chatgpt.kt.bot.app.common
+package chatgpt.kt.bot.app.infra.common
 
-import chatgpt.kt.bot.app.utils.JsonTools
+import chatgpt.kt.bot.app.infra.utils.JsonTools
 
 interface Serializable
 

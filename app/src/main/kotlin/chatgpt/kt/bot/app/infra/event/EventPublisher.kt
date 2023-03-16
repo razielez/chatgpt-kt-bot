@@ -1,4 +1,4 @@
-package chatgpt.kt.bot.app.common
+package chatgpt.kt.bot.app.infra.event
 
 interface EventPublisher<T> {
 

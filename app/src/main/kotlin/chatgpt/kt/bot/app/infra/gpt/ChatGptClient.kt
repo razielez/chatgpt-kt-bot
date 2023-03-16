@@ -1,7 +1,7 @@
-package chatgpt.kt.bot.app.gpt
+package chatgpt.kt.bot.app.infra.gpt
 
-import chatgpt.kt.bot.app.common.Serializable
-import chatgpt.kt.bot.app.utils.JsonTools
+import chatgpt.kt.bot.app.infra.common.Serializable
+import chatgpt.kt.bot.app.infra.utils.JsonTools
 import com.fasterxml.jackson.annotation.JsonProperty
 
 interface Gpt3Client {

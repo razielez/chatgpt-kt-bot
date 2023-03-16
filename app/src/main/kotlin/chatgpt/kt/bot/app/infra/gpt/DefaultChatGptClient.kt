@@ -1,18 +1,20 @@
-package chatgpt.kt.bot.app.gpt
+package chatgpt.kt.bot.app.infra.gpt
 
-import chatgpt.kt.bot.app.common.toJson
-import chatgpt.kt.bot.app.utils.JsonTools
+import chatgpt.kt.bot.app.infra.common.toJson
+import chatgpt.kt.bot.app.infra.utils.JsonTools
 import mu.KotlinLogging
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.springframework.stereotype.Component
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.time.Duration
 
-open class DefaultGptClient(
-    private val properties: ChatGptPropertiesProvider
+@Component
+open class DefaultChatGptClient(
+    private val properties: ChatGptProperties
 ) : Gpt3Client {
 
     private var client: OkHttpClient
@@ -27,13 +29,13 @@ open class DefaultGptClient(
             .writeTimeout(Duration.ofMinutes(3))
             .connectTimeout(Duration.ofMinutes(3))
         if (InetAddress.getLocalHost().hostAddress.startsWith("192.168")) {
-            b.proxy(Proxy(Proxy.Type.SOCKS, InetSocketAddress("127.0.0.1", 1089)))
+            b.proxy(Proxy(Proxy.Type.SOCKS, InetSocketAddress("127.0.0.1", 1088)))
         }
         client = b.build()
     }
 
     override fun completions(message: List<Message>): Message {
-        val token = properties.properties().token
+        val token = properties.token
         val q = Request.Builder()
             .url("$BASE_URL/chat/completions")
             .post(buildPostBody(message).toRequestBody())

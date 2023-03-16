@@ -1,17 +1,18 @@
 package chatgpt.kt.bot.app.gpt
 
-import chatgpt.kt.bot.app.utils.JsonTools
+import chatgpt.kt.bot.app.infra.gpt.*
+import chatgpt.kt.bot.app.infra.utils.JsonTools
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 internal class DefaultChatGptClientTest {
 
-    private lateinit var client: DefaultGptClient
+    private lateinit var client: DefaultChatGptClient
 
     @BeforeEach
     fun setUp() {
-        client = DefaultGptClient(ChatGptEnvProvider())
+        client = DefaultChatGptClient(ChatGptEnvProvider())
     }
 
     @Test

@@ -1,4 +1,4 @@
-package chatgpt.kt.bot.app.utils
+package chatgpt.kt.bot.app.infra.utils
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper

@@ -1,23 +1,23 @@
-package chatgpt.kt.bot.app.common
+package chatgpt.kt.bot.app.infra.event
 
-import chatgpt.kt.bot.app.gpt.ChatGptEnvProvider
-import chatgpt.kt.bot.app.gpt.DefaultGptClient
-import chatgpt.kt.bot.app.gpt.Message
+import chatgpt.kt.bot.app.infra.gpt.DefaultChatGptClient
+import chatgpt.kt.bot.app.infra.gpt.Message
 import com.slack.api.Slack
 import com.slack.api.app_backend.slash_commands.SlashCommandResponseSender
 import com.slack.api.app_backend.slash_commands.response.SlashCommandResponse
-import com.slack.api.bolt.response.ResponseTypes
-import com.slack.api.model.Attachment
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
+import org.springframework.beans.factory.InitializingBean
+import org.springframework.stereotype.Component
 
+@Component
 open class SlackEventConsumer(
-    private val channel: Channel<SlackEvent>
-) : EventConsumer {
-    private val client = DefaultGptClient(ChatGptEnvProvider())
+    private val channel: Channel<SlackEvent>,
+    private val client: DefaultChatGptClient,
+) : EventConsumer, InitializingBean {
     private val slack = Slack.getInstance()
     private val responder = SlashCommandResponseSender(slack)
 
@@ -47,6 +47,10 @@ open class SlackEventConsumer(
                 )
             }
         }
+    }
+
+    override fun afterPropertiesSet() {
+        receive()
     }
 
 }
