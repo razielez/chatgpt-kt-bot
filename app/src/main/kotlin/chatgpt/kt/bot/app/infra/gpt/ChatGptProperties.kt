@@ -10,4 +10,5 @@ import org.springframework.validation.annotation.Validated
 @Validated
 open class ChatGptProperties(
     @field:NotEmpty var token: String = "",
+    var proxyAddr: String? = null,
 )

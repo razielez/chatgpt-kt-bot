@@ -5,14 +5,19 @@ import chatgpt.kt.bot.app.infra.utils.JsonTools
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.test.context.TestPropertySource
+import org.springframework.test.context.junit.jupiter.SpringExtension
 
-internal class DefaultChatGptClientTest {
+
+internal class DefaultChatGptClientTest : BaseChatgptTest() {
+
 
     private lateinit var client: DefaultChatGptClient
 
     @BeforeEach
     fun setUp() {
-        client = DefaultChatGptClient(ChatGptEnvProvider())
+        client = initClient()
     }
 
     @Test
@@ -36,7 +41,17 @@ internal class DefaultChatGptClientTest {
 
     @Test
     fun test_completions() {
-        val m = client.completions(listOf(Message("user", "可以给我讲一个关于单身狗的笑话吗?")))
-        println(m)
+        val qs = listOf(
+            Message("user", "hello, please use java to write a generate random number program!"),
+            Message("user", "then, rewrite it in kotlin!"),
+            Message("user", "then, rewrite it in rust!"),
+        )
+        val ctx = mutableListOf<Message>()
+        qs.forEach {
+            ctx.add(it)
+            val m = client.completions(ctx)
+            println(m)
+        }
+
     }
 }

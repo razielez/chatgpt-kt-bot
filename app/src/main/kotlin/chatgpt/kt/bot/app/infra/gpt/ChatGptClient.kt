@@ -1,10 +1,9 @@
 package chatgpt.kt.bot.app.infra.gpt
 
 import chatgpt.kt.bot.app.infra.common.Serializable
-import chatgpt.kt.bot.app.infra.utils.JsonTools
 import com.fasterxml.jackson.annotation.JsonProperty
 
-interface Gpt3Client {
+interface ChatGptClient {
 
     fun completions(message: List<Message>): Message
 
@@ -43,5 +42,18 @@ data class ChoiceItem(
     @JsonProperty("finish_reason") val finishReason: String?
 ) : Serializable
 
+enum class Model(val value: String) {
+    GPT3_5_TURBO("gpt-3.5-turbo"),
+    GPT4("gpt-4"),
+    ;
+}
 
+enum class Role(val value: String) {
+    SYSTEM("system"),
+    ASSISTANT("assistant"),
+    USER("user")
+}
 
+inline infix fun <reified E : Enum<E>, V> ((E) -> V).by(value: V): E {
+    return enumValues<E>().first { this(it) == value }
+}
