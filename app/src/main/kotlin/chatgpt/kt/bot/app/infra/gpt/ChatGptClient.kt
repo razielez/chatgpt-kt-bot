@@ -9,6 +9,7 @@ interface ChatGptClient {
     @Throws(ChatGptException::class)
     fun completions(message: List<Message>): Message
 
+    @Throws(ChatGptException::class)
     fun completionsSeq(message: List<Message>): Sequence<CompletionResp>
 
 }
