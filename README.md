@@ -10,4 +10,4 @@ a chatgpt bot for slack.
 -[ ] admin command
 
 ## Ref
-- [openai doc](https://platform.openai.com/docs/api-reference/completions/create)
+- [openai doc](https://platform.openai.com/docs/api-reference/chat/create)

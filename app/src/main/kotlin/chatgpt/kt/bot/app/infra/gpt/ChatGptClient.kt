@@ -2,10 +2,14 @@ package chatgpt.kt.bot.app.infra.gpt
 
 import chatgpt.kt.bot.app.infra.common.Serializable
 import com.fasterxml.jackson.annotation.JsonProperty
+import kotlin.jvm.Throws
 
 interface ChatGptClient {
 
+    @Throws(ChatGptException::class)
     fun completions(message: List<Message>): Message
+
+    fun completionsSeq(message: List<Message>): Sequence<CompletionResp>
 
 }
 
@@ -14,6 +18,11 @@ data class Message(
     @JsonProperty("role") val role: String,
     @JsonProperty("content") val content: String
 ) : Serializable
+
+data class Delta(
+    @JsonProperty("role") val role: String?,
+    @JsonProperty("content") val content: String?
+)
 
 data class CompletionReq(
     @JsonProperty("model") val model: String,
@@ -37,7 +46,8 @@ data class CompletionResp(
 ) : Serializable
 
 data class ChoiceItem(
-    @JsonProperty("message") val message: Message,
+    @JsonProperty("message") val message: Message?,
+    @JsonProperty("delta") val delta: Delta?,
     @JsonProperty("index") val index: Int,
     @JsonProperty("finish_reason") val finishReason: String?
 ) : Serializable

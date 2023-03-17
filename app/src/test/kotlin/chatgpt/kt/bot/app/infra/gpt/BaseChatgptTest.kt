@@ -1,4 +1,4 @@
-package chatgpt.kt.bot.app.gpt
+package chatgpt.kt.bot.app.infra.gpt
 
 import chatgpt.kt.bot.app.infra.gpt.ChatGptProperties
 import chatgpt.kt.bot.app.infra.gpt.ChatgptCfg
