@@ -1,5 +1,6 @@
 package chatgpt.kt.bot.app.infra
 
+import chatgpt.kt.bot.app.infra.event.SlackCommandEvent
 import chatgpt.kt.bot.app.infra.event.SlackEvent
 import chatgpt.kt.bot.app.infra.event.SlackEventPublisher
 import kotlinx.coroutines.channels.Channel
