@@ -18,13 +18,7 @@ open class DefaultChatGptClient(
     private val log = KotlinLogging.logger {}
 
     override fun completions(message: List<Message>): Message {
-        val token = properties.token
-        val q = Request.Builder()
-            .url("$BASE_URL/chat/completions")
-            .post(buildPostBody(message).toRequestBody())
-            .header("Content-Type", "application/json")
-            .header("Authorization", "Bearer $token")
-            .build()
+        val q = buildRequest(message, properties.token)
         val now = System.currentTimeMillis()
         val response = client.newCall(q).execute()
         if (!response.isSuccessful) {
@@ -34,6 +28,16 @@ open class DefaultChatGptClient(
         val body = response.body?.string()
         log.info { "req: ${message.toJson()}, resp: ${body}, cost: ${System.currentTimeMillis() - now} ms" }
         return body?.let { JsonTools.fromJson(it, CompletionResp::class.java).choices[0].message } ?: throw ChatGptException("response is null!")
+    }
+
+
+    private fun buildRequest(message:List<Message>, token:String) :Request{
+    return Request.Builder()
+            .url("$BASE_URL/chat/completions")
+            .post(buildPostBody(message).toRequestBody())
+            .header("Content-Type", "application/json")
+            .header("Authorization", "Bearer $token")
+            .build()
     }
 
     private fun buildPostBody(message: List<Message>): String {

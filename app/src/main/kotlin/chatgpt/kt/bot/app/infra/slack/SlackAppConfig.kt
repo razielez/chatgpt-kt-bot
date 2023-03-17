@@ -76,12 +76,12 @@ open class SlackAppConfig(
             if (log.isDebugEnabled) {
                 log.debug { "receive: $payload, ctx: $ctx" }
             }
-            val prefix = "<@${ctx.botUserId}>"
+            val prefix = "<@${ctx.botUserId}> "
             if (text.startsWith(prefix)) {
                 val from = event.user
                 val msg = text.substring(prefix.length)
                 val channel = event.channel
-                val event = SlackChatEvent(from, msg, channel, event.ts)
+                val event = SlackChatEvent(from, msg, channel, event.ts, payload.token)
                 log.info { "receive message at: ${event.ts}, channel: $channel, $event , from: ${ctx.requestUserId}" }
                 eventPublisher.send(event)
             }

@@ -2,10 +2,12 @@ package chatgpt.kt.bot.app.infra.event
 
 import chatgpt.kt.bot.app.infra.gpt.DefaultChatGptClient
 import chatgpt.kt.bot.app.infra.gpt.Message
+import chatgpt.kt.bot.app.infra.slack.SlackProperties
 import com.slack.api.Slack
 import com.slack.api.app_backend.slash_commands.SlashCommandResponseSender
 import com.slack.api.app_backend.slash_commands.response.SlashCommandResponse
 import com.slack.api.bolt.App
+import com.slack.api.methods.request.users.UsersInfoRequest
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
@@ -19,6 +21,7 @@ open class SlackEventConsumer(
     private val channel: Channel<SlackEvent>,
     private val gptClient: DefaultChatGptClient,
     private val app: App,
+    private val slackProperties: SlackProperties,
 ) : EventConsumer, InitializingBean {
     private val slack = Slack.getInstance()
     private val responder = SlashCommandResponseSender(slack)
@@ -31,7 +34,7 @@ open class SlackEventConsumer(
             while (true) {
                 val event = channel.receive()
                 if (log.isDebugEnabled) {
-                    log.debug { "Receive: $event" }
+                    log.debug { "Receive: $event, msg: [${event.msg()}]" }
                 }
                 when (event) {
                     is SlackCommandEvent -> receiveCommandEvent(event)
@@ -63,21 +66,26 @@ open class SlackEventConsumer(
 
     private fun receiveChatEvent(event: SlackChatEvent) {
         val client = app.client
+        val uiq = UsersInfoRequest.builder()
+            .token(slackProperties.botToken)
+            .user(event.from)
+            .build()
+        val ui = client.usersInfo(uiq)
+        val email = ui.user.profile.email
+        log.info { "user email: $email" }
         val permalink = client.chatGetPermalink { r ->
             r.channel(event.channel).messageTs(event.ts)
         }
-        val msg = gptClient.completions(listOf(Message("user", event.msg))).content
-        if (permalink.isOk) {
-            val message = client.chatPostMessage { r ->
-                r.channel(event.channel)
-                    .text(msg)
-                    .unfurlLinks(true)
-            }
-            if (!message.isOk) {
-                log.error { "chat.PostMsg failed: ${message.error}" }
-            }
+        val msg = if (!event.msg.startsWith("test")) {
+            gptClient.completions(listOf(Message("user", event.msg))).content
         } else {
-            log.error { "permalink failed! ${permalink.error}" }
+            "this is a tset from ${event.msg}"
+        }
+        val message = client.chatPostMessage { r ->
+            r.channel(event.channel).text(msg)
+        }
+        if (!message.isOk) {
+            log.error { "chat.PostMsg failed: ${message.error}" }
         }
     }
 
