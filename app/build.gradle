@@ -5,19 +5,18 @@ plugins {
 }
 
 dependencies {
-    api(platform('com.fasterxml.jackson:jackson-bom:2.14.2'))
     api(platform("org.springframework.boot:spring-boot-dependencies:$springBootVersion"))
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
     implementation 'com.fasterxml.jackson.core:jackson-databind:'
     implementation 'com.fasterxml.jackson.core:jackson-annotations:'
-    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.14.2'
+    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
     implementation 'io.github.microutils:kotlin-logging-jvm:3.0.5'
     implementation 'ch.qos.logback:logback-classic:1.4.5'
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     implementation("org.springframework.boot:spring-boot-starter-web:")
-    implementation("org.springframework.boot:spring-boot-starter-validation:")
+    //implementation("org.springframework.boot:spring-boot-starter-validation:")
     testImplementation("org.springframework.boot:spring-boot-starter-test:")
-    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:$springBootVersion"
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:"
     implementation("com.slack.api:bolt-jakarta-servlet:$slackVersion")
 }
 
