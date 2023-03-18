@@ -40,16 +40,19 @@ internal class DefaultChatGptClientTest : BaseChatgptTest() {
 
     @Test
     fun test_completions() {
+        // todo:
         val qs = listOf(
-            Message("user", "hello, please use java to write a generate random number program!"),
-            Message("user", "then, rewrite it in kotlin!"),
-            Message("user", "then, rewrite it in rust!"),
+            Message("user", "你好,可以讲一个笑话吗"),
+            Message("user", "可以把这个笑话翻译成英文吗?"),
+            Message("user", "可以用中文更详细的表述下吗?"),
         )
         val ctx = mutableListOf<Message>()
         qs.forEach {
             ctx.add(it)
-            val m = client.completions(ctx)
-            println(m)
+            println("Q:$it")
+            val ans = client.completions(ctx)
+            ctx.add(Message(Role.ASSISTANT.value, ans.content))
+            println("A:$ans")
         }
     }
 
