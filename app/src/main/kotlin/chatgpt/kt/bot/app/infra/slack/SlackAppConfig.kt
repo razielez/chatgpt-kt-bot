@@ -4,10 +4,12 @@ import chatgpt.kt.bot.app.infra.event.EventPublisher
 import chatgpt.kt.bot.app.infra.event.SlackChatEvent
 import chatgpt.kt.bot.app.infra.event.SlackCommandEvent
 import chatgpt.kt.bot.app.infra.event.SlackEvent
-import chatgpt.kt.bot.app.infra.gpt.ChatGptProperties
+import chatgpt.kt.bot.app.infra.event.handler.Kind
 import com.slack.api.bolt.App
 import com.slack.api.bolt.AppConfig
 import com.slack.api.bolt.request.RequestType
+import com.slack.api.model.event.MessageBotEvent
+import com.slack.api.model.event.MessageChangedEvent
 import com.slack.api.model.event.MessageEvent
 import com.slack.api.model.event.ReactionAddedEvent
 import mu.KotlinLogging
@@ -45,12 +47,17 @@ open class SlackAppConfig(
         }
         app.command("/hello") { req, ctx ->
             log.info { "receive: $req, ctx: $ctx" }
-            val event = SlackCommandEvent(ctx.responseUrl, ":wave: Hello!req: ${req.payload.text}")
+            val event = SlackCommandEvent(ctx.responseUrl, Kind.ASK.prefix + ":wave: Hello!req: ${req.payload.text}", Kind.ASK)
             eventPublisher.send(event)
             ctx.ack()
         }
         app.command("/ask") { req, ctx ->
-            val event = SlackCommandEvent(ctx.responseUrl, req.payload.text)
+            val event = SlackCommandEvent(ctx.responseUrl, Kind.ASK.prefix + req.payload.text, Kind.ASK)
+            eventPublisher.send(event)
+            ctx.ack()
+        }
+        app.command("/translate") { req, ctx ->
+            val event = SlackCommandEvent(ctx.responseUrl, Kind.TRANSLATE.prefix + req.payload.text, Kind.TRANSLATE)
             eventPublisher.send(event)
             ctx.ack()
         }
@@ -81,10 +88,23 @@ open class SlackAppConfig(
                 val from = event.user
                 val msg = text.substring(prefix.length)
                 val channel = event.channel
-                val event = SlackChatEvent(from, msg, channel, event.ts, payload.token)
-                log.info { "receive message at: ${event.ts}, channel: $channel, $event , from: ${ctx.requestUserId}" }
+                val event = SlackChatEvent(
+                    from = from,
+                    msg = msg,
+                    kind = Kind.parse(msg),
+                    channel = channel,
+                    ts = event.ts,
+                )
+                log.info { "receive message at: ${event.ts}, channel: $channel, $event , from: $from" }
                 eventPublisher.send(event)
             }
+            ctx.ack()
+        }
+        app.event(MessageBotEvent::class.java){ _, ctx->
+            // todo:
+            ctx.ack()
+        }
+        app.event(MessageChangedEvent::class.java){_,ctx->
             ctx.ack()
         }
         return app

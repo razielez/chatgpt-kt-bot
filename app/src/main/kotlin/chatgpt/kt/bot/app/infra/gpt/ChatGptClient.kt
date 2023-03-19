@@ -1,8 +1,8 @@
 package chatgpt.kt.bot.app.infra.gpt
 
 import chatgpt.kt.bot.app.infra.common.Serializable
+import chatgpt.kt.bot.app.infra.common.toJson
 import com.fasterxml.jackson.annotation.JsonProperty
-import kotlin.jvm.Throws
 
 interface ChatGptClient {
 
@@ -11,14 +11,31 @@ interface ChatGptClient {
 
     @Throws(ChatGptException::class)
     fun completionsSeq(message: List<Message>): Sequence<CompletionResp>
-
 }
 
 
 data class Message(
     @JsonProperty("role") val role: String,
     @JsonProperty("content") val content: String
-) : Serializable
+) : Serializable {
+
+    companion object {
+        fun of(role: Role, seq: Sequence<CompletionResp>): Message {
+            var content = ""
+            seq.iterator().forEach { resp ->
+                resp.choices[0].delta?.content?.also {
+                    content += it
+                }
+            }
+            return Message(
+                role.value,
+                content
+            )
+        }
+    }
+}
+
+fun List<Message>.tokenLen(): Int = this.sumOf { it.toJson().length }
 
 data class Delta(
     @JsonProperty("role") val role: String?,

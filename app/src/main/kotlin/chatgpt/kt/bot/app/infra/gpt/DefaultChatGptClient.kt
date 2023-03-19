@@ -93,10 +93,10 @@ open class DefaultChatGptClient(
 
     companion object {
         const val BASE_URL = "https://api.openai.com/v1"
-        const val MAX_TOKEN = 2000
+        const val MAX_TOKEN = 2048
         const val TEMPERATURE = 0.7f
         const val DELTA_PREFIX = "data: "
-        const val DELTA_END_SUFFIX = "data: "
+        const val DELTA_END_SUFFIX = "[DONE]"
     }
 
 }

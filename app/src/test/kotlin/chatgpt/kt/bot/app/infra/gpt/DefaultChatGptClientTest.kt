@@ -1,6 +1,5 @@
-package chatgpt.kt.bot.app.gpt
+package chatgpt.kt.bot.app.infra.gpt
 
-import chatgpt.kt.bot.app.infra.gpt.*
 import chatgpt.kt.bot.app.infra.utils.JsonTools
 import com.fasterxml.jackson.databind.ObjectMapper
 import okio.buffer
@@ -40,7 +39,6 @@ internal class DefaultChatGptClientTest : BaseChatgptTest() {
 
     @Test
     fun test_completions() {
-        // todo:
         val qs = listOf(
             Message("user", "你好,可以讲一个笑话吗"),
             Message("user", "可以把这个笑话翻译成英文吗?"),
@@ -101,14 +99,14 @@ internal class DefaultChatGptClientTest : BaseChatgptTest() {
 
     @Test
     fun `test completions seq`() {
-        var answer = ""
-        client.completionsSeq(listOf(Message("user", "please tell me a joke?"))).iterator()
-            .forEach { resp ->
-                println(resp)
-                resp.choices[0].delta?.content?.also {
-                    answer += it
-                }
-            }
-        println("The answer is: $answer")
+        //client.completions(listOf(Message("user","请把核心主义社会价值观翻译成英文?")))
+        val now = System.currentTimeMillis()
+        val resp = client.completionsSeq(listOf(Message("user", "请把核心主义社会价值观翻译成英文?")))
+        val msg = Message.of(Role.ASSISTANT, resp)
+        println  ("cost: ${System.currentTimeMillis() - now} ms" )
+        println("The answer is: ${msg.content}")
+
+        val list = listOf<Message>()
+        list.tokenLen()
     }
 }
