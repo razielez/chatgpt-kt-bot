@@ -6,8 +6,9 @@ a chatgpt bot for slack.
 - `jdk17`
 
 ## Roadmap
--[ ] message persistence
--[ ] admin command
+
+- [ ] message persistence
+- [ ] admin command
 
 ## Ref
 - [openai doc](https://platform.openai.com/docs/api-reference/chat/create)
