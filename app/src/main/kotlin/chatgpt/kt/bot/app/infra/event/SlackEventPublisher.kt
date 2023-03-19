@@ -1,4 +1,4 @@
-package chatgpt.kt.bot.app.common
+package chatgpt.kt.bot.app.infra.event
 
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
