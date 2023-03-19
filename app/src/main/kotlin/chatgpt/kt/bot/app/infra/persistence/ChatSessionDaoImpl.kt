@@ -37,7 +37,7 @@ open class ChatSessionDaoImpl(
     }
 
     override fun afterPropertiesSet() {
-        persisPath = Path(sessionPath)
+        persisPath = Path(sessionPath, "session.json")
         if (Files.exists(persisPath)) {
             Files.lines(persisPath).forEach {
                 val session = JsonTools.fromJson(it, ChatSession::class.java)
