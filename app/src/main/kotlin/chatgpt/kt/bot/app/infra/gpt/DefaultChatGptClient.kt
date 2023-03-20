@@ -32,7 +32,7 @@ open class DefaultChatGptClient(
         return body?.let { JsonTools.fromJson(it, CompletionResp::class.java).choices[0].message } ?: throw ChatGptException("response is null!")
     }
 
-    override fun completionsSeq(message: List<Message>): Sequence<CompletionResp> = sequence {
+    override fun completionsSSE(message: List<Message>): Sequence<CompletionResp> = sequence {
         val q = buildRequest(buildStreamBody(message), properties.token)
         val response = client.newCall(q).execute()
         if (!response.isSuccessful) {

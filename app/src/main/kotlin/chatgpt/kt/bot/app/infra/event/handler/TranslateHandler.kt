@@ -25,7 +25,7 @@ open class TranslateHandler(
             log.warn { "translate parse failed! q: $q" }
             return true
         }
-        val user = Message(Role.USER.value, "translate it from ${action.from.value} to ${action.to.value}, 这句话是 ${action.text}")
+        val user = Message(Role.USER.value, "translate it from ${action.from.value} to ${action.to.value} [${action.text}]")
         val ans = completions(
             listOf(
                 sys,

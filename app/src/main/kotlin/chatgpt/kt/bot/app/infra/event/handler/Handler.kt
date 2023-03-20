@@ -46,7 +46,7 @@ class ChatBaseImpl(
                 q,
                 role
             ) {
-                Message.of(Role.ASSISTANT, chatGptClient.completionsSeq(it))
+                Message.of(Role.ASSISTANT, chatGptClient.completionsSSE(it))
             }
             m.content
         } catch (e: Exception) {

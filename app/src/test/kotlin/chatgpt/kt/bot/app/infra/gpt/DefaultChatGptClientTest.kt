@@ -1,5 +1,6 @@
 package chatgpt.kt.bot.app.infra.gpt
 
+import chatgpt.kt.bot.app.infra.event.handler.TranslateAction
 import chatgpt.kt.bot.app.infra.utils.JsonTools
 import com.fasterxml.jackson.databind.ObjectMapper
 import okio.buffer
@@ -101,9 +102,9 @@ internal class DefaultChatGptClientTest : BaseChatgptTest() {
     fun `test completions seq`() {
         //client.completions(listOf(Message("user","请把核心主义社会价值观翻译成英文?")))
         val now = System.currentTimeMillis()
-        val resp = client.completionsSeq(listOf(Message("user", "请把核心主义社会价值观翻译成英文?")))
+        val resp = client.completionsSSE(listOf(Message("user", "请把核心主义社会价值观翻译成英文?")))
         val msg = Message.of(Role.ASSISTANT, resp)
-        println  ("cost: ${System.currentTimeMillis() - now} ms" )
+        println("cost: ${System.currentTimeMillis() - now} ms")
         println("The answer is: ${msg.content}")
 
         val list = listOf<Message>()
@@ -112,8 +113,27 @@ internal class DefaultChatGptClientTest : BaseChatgptTest() {
 
     @Test
     fun `test translate`() {
+        val q = listOf(
+            "水滴",
+            "forever",
+            "will",
+            "意志",
+            "\"Ich werde es tun\" translates to \"I will do it\" in English.",
+            "什么叫惊喜"
+        )
         val sys = Message(Role.SYSTEM.value, "You are a translation engine that can only translate text and cannot interpret it")
-        val ass = Message(Role.ASSISTANT.value, "")
-
+        q.forEach {
+            val action = TranslateAction.of(it)
+            val f = action.from
+            val t = action.to
+            val user = Message(Role.ASSISTANT.value, "translate it from ${f.value} to ${t.value}, {${action.text}}")
+            val ans = client.completions(
+                listOf(
+                    sys,
+                    user
+                )
+            ).content
+            println("Q: ${action.text} \nA: $ans")
+        }
     }
 }
