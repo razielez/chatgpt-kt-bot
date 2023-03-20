@@ -4,6 +4,7 @@ import chatgpt.kt.bot.app.domain.ChatSession
 import chatgpt.kt.bot.app.domain.dao.ChatSessionDao
 import chatgpt.kt.bot.app.infra.common.toJson
 import chatgpt.kt.bot.app.infra.utils.JsonTools
+import mu.KotlinLogging
 import org.springframework.beans.factory.DisposableBean
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Value
@@ -21,6 +22,8 @@ open class ChatSessionDaoImpl(
 
     private val map = ConcurrentHashMap<String, ChatSession>(5)
 
+    private val log = KotlinLogging.logger {  }
+
     private lateinit var persisPath: Path
 
 
@@ -33,6 +36,7 @@ open class ChatSessionDaoImpl(
     }
 
     override fun clear(id: String): ChatSession? {
+        log.info { "remove session $id" }
         return map.remove(id)
     }
 
