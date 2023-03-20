@@ -132,7 +132,7 @@ enum class Kind(
         fun parse(msg: String?): Kind = if (msg.isNullOrBlank()) {
             EMPTY
         } else {
-            values().firstOrNull { it.prefix == msg } ?: CHAT
+            values().filter { it != CHAT }.first { msg.startsWith(it.prefix) } ?: CHAT
         }
 
         fun display(): String {

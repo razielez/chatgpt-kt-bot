@@ -94,7 +94,7 @@ enum class Lang(val value: String, val description: String, val range: IntRange)
     ;
 
     companion object {
-        fun of(ch: Char): Lang = values().firstOrNull { it.range.contains(ch.code) } ?: UNKNOWN
+        fun of(ch: Char): Lang = values().find { it.range.contains(ch.code) } ?: UNKNOWN
 
     }
 }

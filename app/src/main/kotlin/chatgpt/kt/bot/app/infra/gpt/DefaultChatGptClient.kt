@@ -23,42 +23,46 @@ open class DefaultChatGptClient(
         val q = buildRequest(buildPostBody(message), properties.token)
         val now = System.currentTimeMillis()
         val response = client.newCall(q).execute()
-        if (!response.isSuccessful) {
-            log.error { "request failed! req: ${message.toJson()}, response: ${response.body?.string() ?: "is null"}" }
-            throw ChatGptException("request failed!")
+        response.use {
+            if (!response.isSuccessful) {
+                log.error { "request failed! req: ${message.toJson()}, response: ${response.body?.string() ?: "is null"}" }
+                throw ChatGptException("request failed!")
+            }
+            val body = response.body?.string()
+            log.info { "req: ${message.toJson()}, resp: ${body}, cost: ${System.currentTimeMillis() - now} ms" }
+            return body?.let { JsonTools.fromJson(it, CompletionResp::class.java).choices[0].message } ?: throw ChatGptException("response is null!")
         }
-        val body = response.body?.string()
-        log.info { "req: ${message.toJson()}, resp: ${body}, cost: ${System.currentTimeMillis() - now} ms" }
-        return body?.let { JsonTools.fromJson(it, CompletionResp::class.java).choices[0].message } ?: throw ChatGptException("response is null!")
     }
 
     override fun completionsSSE(message: List<Message>): Sequence<CompletionResp> = sequence {
         val q = buildRequest(buildStreamBody(message), properties.token)
         val response = client.newCall(q).execute()
-        if (!response.isSuccessful) {
-            log.error { "request failed! req: ${message.toJson()}, response: ${response.body?.string() ?: " is null"}" }
-            throw ChatGptException("request failed!")
-        }
-        var line: String?
-        val buffer = response.body?.byteStream()?.source()?.buffer()
-        while (buffer?.readUtf8Line().also { line = it } != null) {
-            if (line.isNullOrBlank()) {
-                continue
+        response.use { it ->
+            if (!response.isSuccessful) {
+                log.error { "request failed! req: ${message.toJson()}, response: ${response.body?.string() ?: " is null"}" }
+                throw ChatGptException("request failed!")
             }
-            if (!line!!.startsWith(DELTA_PREFIX)) {
-                log.warn { "Unexpected line: $line " }
-                break
+            var line: String?
+            val buffer = it.body?.byteStream()?.source()?.buffer()
+            while (buffer?.readUtf8Line().also { line = it } != null) {
+                if (line.isNullOrBlank()) {
+                    continue
+                }
+                if (!line!!.startsWith(DELTA_PREFIX)) {
+                    log.warn { "Unexpected line: $line " }
+                    break
+                }
+                val t = line!!.substring(DELTA_PREFIX.length)
+                if (t.endsWith(DELTA_END_SUFFIX)) {
+                    break
+                }
+                if (!t.startsWith("{")) {
+                    log.warn { "end with not a json: $line" }
+                    break
+                }
+                val resp = JsonTools.fromJson(t, CompletionResp::class.java)
+                yield(resp)
             }
-            val t = line!!.substring(DELTA_PREFIX.length)
-            if (t.endsWith(DELTA_END_SUFFIX)) {
-                break
-            }
-            if (!t.startsWith("{")) {
-                log.warn { "end with not a json: $line" }
-                break
-            }
-            val resp = JsonTools.fromJson(t, CompletionResp::class.java)
-            yield(resp)
         }
     }
 
