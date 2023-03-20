@@ -97,7 +97,7 @@ class SlackBaseImpl(
     override fun send(channel: String, text: String) {
         val response = app.client.chatPostMessage { r -> r.channel(channel).text(text) }
         if (!response.isOk) {
-            log.error { "chat.PostMsg failed: ${response.error}" }
+            log.error { "chat.PostMsg failed: $channel, $text, ${response.error}" }
         }
     }
 
@@ -109,7 +109,7 @@ class SlackBaseImpl(
                 .build()
         )
         if (!IntRange(200, 299).contains(response.code)) {
-            log.error { "Webhook response failed! msg: ${response.message}, resp: $response" }
+            log.error { "Webhook response failed! reply: $reply msg: ${response.message}, resp: $response" }
         }
     }
 }

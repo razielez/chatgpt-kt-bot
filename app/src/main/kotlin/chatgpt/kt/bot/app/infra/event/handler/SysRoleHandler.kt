@@ -16,7 +16,7 @@ open class SysRoleHandler(
         val user = findUser(se.from)
         val sessionId = user.profile.email
         val content = completions(sessionId, se.parsedMsg(), Role.SYSTEM)
-        send(sessionId, content)
+        send(se.channel, content)
         return true
     }
 
