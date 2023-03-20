@@ -2,8 +2,13 @@
 
 a chatgpt bot for slack.
 
-## Requiters
+## Build
 - `jdk17`
+- `gradle`
+
+```shell
+./gradlew clean build  -q -x test               
+```
 
 ## Roadmap
 
