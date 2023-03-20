@@ -25,14 +25,14 @@ open class TranslateHandler(
             log.warn { "translate parse failed! q: $q" }
             return true
         }
-        val user = Message(Role.USER.value, "translate it from ${action.from.value} to ${action.to.value} [${action.text}]")
+        val user = Message(Role.USER.value, "translate it from ${action.from.value} to ${action.to.value}, {${action.text}}")
         val ans = completions(
             listOf(
                 sys,
                 user
             )
         )
-        val reply = "Q:$q\nA:$ans"
+        val reply = "Q: ${action.text} \nA: $ans"
         sendByCmd(se.responseUrl, reply)
         return true
     }
