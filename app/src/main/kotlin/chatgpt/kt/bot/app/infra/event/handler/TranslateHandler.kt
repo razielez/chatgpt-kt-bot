@@ -25,14 +25,15 @@ open class TranslateHandler(
             log.warn { "translate parse failed! q: $q" }
             return true
         }
-        val user = Message(Role.USER.value, "translate it from ${action.from.first.value} to ${action.to.first.value}, 这句话是 ${action.text}")
+        val user = Message(Role.USER.value, "translate it from ${action.from.value} to ${action.to.value}, 这句话是 ${action.text}")
         val ans = completions(
             listOf(
                 sys,
                 user
             )
         )
-        sendByCmd(se.responseUrl, ans)
+        val reply = "Q:$q\nA:$ans"
+        sendByCmd(se.responseUrl, reply)
         return true
     }
 
@@ -42,15 +43,15 @@ open class TranslateHandler(
 }
 
 data class TranslateAction(
-    val from: Pair<Lang, Double>,
-    val to: Pair<Lang, Double>,
+    val from: Lang,
+    val to: Lang,
     val text: String
 ) {
 
-    fun isUnknown() = from.first == Lang.UNKNOWN || to.first == Lang.UNKNOWN
+    fun isUnknown() = from == Lang.UNKNOWN || to == Lang.UNKNOWN
 
     companion object {
-        fun unknown() = TranslateAction(Pair(Lang.UNKNOWN, Double.MIN_VALUE), Pair(Lang.UNKNOWN, Double.MIN_VALUE), "")
+        fun unknown() = TranslateAction(Lang.UNKNOWN, Lang.UNKNOWN, "")
 
         fun of(text: String): TranslateAction {
             if (text.isBlank()) return unknown()
@@ -62,10 +63,22 @@ data class TranslateAction(
             val result = counts.mapValues { it.value.toDouble() / len }
                 .entries
                 .sortedByDescending { it.value }
-            if (result.size < 2) return unknown()
+
+            if (result.isEmpty()) return unknown()
+            val from = result[0].key
+            val to = if (result.size == 1) {
+                when (from) {
+                    Lang.EN -> Lang.ZH_HANS
+                    Lang.ZH_HANS -> Lang.EN
+                    else -> Lang.UNKNOWN
+                }
+            } else {
+                result[1].key
+            }
+
             return TranslateAction(
-                from = Pair(result[0].key, result[0].value),
-                to = Pair(result[1].key, result[1].value),
+                from = from,
+                to = to,
                 text = text.trim()
             )
         }
