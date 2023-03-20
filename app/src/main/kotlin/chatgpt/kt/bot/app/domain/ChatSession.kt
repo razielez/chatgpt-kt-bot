@@ -19,7 +19,7 @@ class ChatSession(
     }
 
     companion object {
-        const val MAX_LEN = 4096 // 支持最大上下文长度
+        const val MAX_LEN = 2900 // 支持最大上下文长度 ~= 4000 token
 
         fun of(sessionId: String): ChatSession {
             return ChatSession(sessionId, LinkedList())
