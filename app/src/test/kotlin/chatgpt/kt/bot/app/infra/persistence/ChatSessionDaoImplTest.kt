@@ -3,12 +3,13 @@ package chatgpt.kt.bot.app.infra.persistence
 import chatgpt.kt.bot.app.infra.gpt.BaseChatgptTest
 import chatgpt.kt.bot.app.infra.gpt.DefaultChatGptClient
 import chatgpt.kt.bot.app.infra.gpt.Message
+import chatgpt.kt.bot.app.infra.gpt.Role
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 internal class ChatSessionDaoImplTest : BaseChatgptTest() {
 
-    private val sessionDao = ChatSessionDaoImpl()
+    private val sessionDao = ChatSessionDaoImpl("/tmp")
 
     private lateinit var client: DefaultChatGptClient
 
@@ -24,9 +25,9 @@ internal class ChatSessionDaoImplTest : BaseChatgptTest() {
             Message("user", "可以把这个笑话翻译成英文吗?"),
             Message("user", "可以用中文更详细的表述下吗?"),
         )
-        qs.forEach {
+        qs.forEach { it ->
             println("Q: ${it.content}")
-            val (m,_) = sessionDao.with("test", it.content, client::completions)
+            val (m,_) = sessionDao.with("test", it.content, Role.USER){ client.completions(it)}
             println("A: ${m.content}")
         }
     }

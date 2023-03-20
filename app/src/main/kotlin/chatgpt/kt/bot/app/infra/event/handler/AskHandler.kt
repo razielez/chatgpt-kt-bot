@@ -2,42 +2,26 @@ package chatgpt.kt.bot.app.infra.event.handler
 
 import chatgpt.kt.bot.app.infra.event.SlackCommandEvent
 import chatgpt.kt.bot.app.infra.event.SlackEvent
-import chatgpt.kt.bot.app.infra.gpt.ChatGptClient
 import chatgpt.kt.bot.app.infra.gpt.Message
-import com.slack.api.Slack
-import com.slack.api.app_backend.slash_commands.SlashCommandResponseSender
-import com.slack.api.app_backend.slash_commands.response.SlashCommandResponse
-import mu.KotlinLogging
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 
 
 @Component
 open class AskHandler(
-    private val chatGptClient: ChatGptClient,
-) : Handler {
-    private val slack = Slack.getInstance()
-    private val responder = SlashCommandResponseSender(slack)
-    private val log = KotlinLogging.logger {}
-
+    @Qualifier("chatBaseImpl") private val chatBase: ChatBase,
+    @Qualifier("slackBaseImpl") private val slackBase: SlackBase,
+) : Handler, ChatBase by chatBase, SlackBase by slackBase {
 
     override fun hande(event: SlackEvent): Boolean {
         val se = event as SlackCommandEvent
-        val answer = try {
-            chatGptClient.completions(listOf(Message("user", se.parsedMsg()))).content
-        } catch (e: Exception) {
-            log.error { "completions error $e" }
-            "开始摆烂..."
-        }
+        val q = se.parsedMsg()
+        val a = completions(listOf(Message("user", q)))
         val reply = """
-                        Prompt: ${se.parsedMsg()}
-                        $answer
+                        Q: $q
+                        A: $a
                         """.trimIndent()
-        responder.send(
-            se.responseUrl,
-            SlashCommandResponse.builder()
-                .text(reply)
-                .build()
-        )
+        sendByCmd(se.responseUrl, reply)
         return true
     }
 
