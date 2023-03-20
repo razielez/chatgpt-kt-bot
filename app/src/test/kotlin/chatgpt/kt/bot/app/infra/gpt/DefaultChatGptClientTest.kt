@@ -109,4 +109,11 @@ internal class DefaultChatGptClientTest : BaseChatgptTest() {
         val list = listOf<Message>()
         list.tokenLen()
     }
+
+    @Test
+    fun `test translate`() {
+        val sys = Message(Role.SYSTEM.value, "You are a translation engine that can only translate text and cannot interpret it")
+        val ass = Message(Role.ASSISTANT.value, "")
+
+    }
 }

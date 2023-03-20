@@ -17,10 +17,7 @@ open class AskHandler(
         val se = event as SlackCommandEvent
         val q = se.parsedMsg()
         val a = completions(listOf(Message("user", q)))
-        val reply = """
-                        Q: $q
-                        A: $a
-                        """.trimIndent()
+        val reply = "Q: $q\nA: $a"
         sendByCmd(se.responseUrl, reply)
         return true
     }

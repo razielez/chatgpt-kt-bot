@@ -108,7 +108,7 @@ class SlackBaseImpl(
                 .text(reply)
                 .build()
         )
-        if (!IntRange(200, 300).contains(response.code)) {
+        if (!IntRange(200, 299).contains(response.code)) {
             log.error { "Webhook response failed! msg: ${response.message}, resp: $response" }
         }
     }
@@ -124,7 +124,7 @@ enum class Kind(
     CHAT("", "包含上下文的对话", false, false),
     CLEAR("/clear", "清空对话上下文", false, true),
     SYS_ROLE("/sys", "引入设定,角色扮演", false, true),
-    TRANSLATE("/translate", "翻译", true, false),
+    TRANSLATE("/translate", "翻译", true, true),
     EMPTY("", "", false, false),
     HELP("/help", "help", false, true);
 
