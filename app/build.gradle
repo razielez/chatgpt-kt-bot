@@ -14,9 +14,8 @@ dependencies {
     implementation 'ch.qos.logback:logback-classic:1.4.5'
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     implementation("org.springframework.boot:spring-boot-starter-web:")
-    //implementation("org.springframework.boot:spring-boot-starter-validation:")
     testImplementation("org.springframework.boot:spring-boot-starter-test:")
-    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:"
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
     implementation("com.slack.api:bolt-jakarta-servlet:$slackVersion")
 }
 

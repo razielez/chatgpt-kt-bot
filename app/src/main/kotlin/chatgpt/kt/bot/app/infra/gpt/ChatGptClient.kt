@@ -3,6 +3,7 @@ package chatgpt.kt.bot.app.infra.gpt
 import chatgpt.kt.bot.app.infra.common.Serializable
 import chatgpt.kt.bot.app.infra.common.toJson
 import com.fasterxml.jackson.annotation.JsonProperty
+import kotlin.properties.Delegates
 
 interface ChatGptClient {
 
@@ -18,6 +19,12 @@ data class Message(
     @JsonProperty("role") val role: String,
     @JsonProperty("content") val content: String
 ) : Serializable {
+
+    var length by Delegates.notNull<Int>()
+
+    init {
+        length = toJson().length
+    }
 
     companion object {
         fun of(role: Role, seq: Sequence<CompletionResp>): Message {
@@ -35,7 +42,7 @@ data class Message(
     }
 }
 
-fun List<Message>.tokenLen(): Int = this.sumOf { it.toJson().length }
+fun List<Message>.tokenLen(): Int = this.sumOf { it.length }
 
 data class Delta(
     @JsonProperty("role") val role: String?,
