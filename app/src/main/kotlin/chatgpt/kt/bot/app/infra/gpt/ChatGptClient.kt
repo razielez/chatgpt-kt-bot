@@ -2,6 +2,7 @@ package chatgpt.kt.bot.app.infra.gpt
 
 import chatgpt.kt.bot.app.infra.common.Serializable
 import chatgpt.kt.bot.app.infra.common.toJson
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import kotlin.properties.Delegates
 
@@ -20,6 +21,7 @@ data class Message(
     @JsonProperty("content") val content: String
 ) : Serializable {
 
+    @get:JsonIgnore
     var length by Delegates.notNull<Int>()
 
     init {
