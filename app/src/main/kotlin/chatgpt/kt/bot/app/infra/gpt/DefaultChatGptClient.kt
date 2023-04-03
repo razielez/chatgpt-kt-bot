@@ -2,6 +2,8 @@ package chatgpt.kt.bot.app.infra.gpt
 
 import chatgpt.kt.bot.app.infra.common.toJson
 import chatgpt.kt.bot.app.infra.utils.JsonTools
+import chatgpt.kt.bot.app.infra.utils.Retry
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -13,29 +15,35 @@ import org.springframework.stereotype.Component
 
 @Component
 open class DefaultChatGptClient(
-    private val properties: ChatGptProperties,
     @Qualifier("chatgptOkHttpClient") private val client: OkHttpClient,
+    private val chatLoadBalance: ChatLoadBalance,
 ) : ChatGptClient {
 
     private val log = KotlinLogging.logger {}
 
     override fun completions(message: List<Message>): Message {
-        val q = buildRequest(buildPostBody(message), properties.token)
-        val now = System.currentTimeMillis()
-        val response = client.newCall(q).execute()
-        response.use {
-            if (!response.isSuccessful) {
-                log.error { "request failed! req: ${message.toJson()}, response: ${response.body?.string() ?: "is null"}" }
-                throw ChatGptException("request failed!")
+        return runBlocking {
+            Retry.withBackoff {
+                val q = buildRequest(buildPostBody(message), chatLoadBalance.get().v)
+                val now = System.currentTimeMillis()
+                val response = client.newCall(q).execute()
+                response.use {
+                    if (!response.isSuccessful) {
+                        log.error { "request failed! req: ${message.toJson()}, response: ${response.body?.string() ?: "is null"}" }
+                        throw ChatGptException("request failed!")
+                    }
+                    val body = response.body?.string()
+                    log.info { "req: ${message.toJson()}, resp: ${body}, cost: ${System.currentTimeMillis() - now} ms" }
+                    val result = body?.let { JsonTools.fromJson(it, CompletionResp::class.java).choices[0].message } ?: throw ChatGptException("response is null!")
+                    log.info { "cost token: ${message.tokenLen()} result: $result" }
+                    result
+                }
             }
-            val body = response.body?.string()
-            log.info { "req: ${message.toJson()}, resp: ${body}, cost: ${System.currentTimeMillis() - now} ms" }
-            return body?.let { JsonTools.fromJson(it, CompletionResp::class.java).choices[0].message } ?: throw ChatGptException("response is null!")
         }
     }
 
     override fun completionsSSE(message: List<Message>): Sequence<CompletionResp> = sequence {
-        val q = buildRequest(buildStreamBody(message), properties.token)
+        val q = buildRequest(buildStreamBody(message), chatLoadBalance.get().v)
         val response = client.newCall(q).execute()
         response.use { it ->
             if (!response.isSuccessful) {

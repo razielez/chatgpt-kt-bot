@@ -3,6 +3,7 @@ package chatgpt.kt.bot.app.infra.gpt
 import chatgpt.kt.bot.app.infra.gpt.ChatGptProperties
 import chatgpt.kt.bot.app.infra.gpt.ChatgptCfg
 import chatgpt.kt.bot.app.infra.gpt.DefaultChatGptClient
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -12,6 +13,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 @ExtendWith(SpringExtension::class)
 @EnableConfigurationProperties(value = [ChatGptProperties::class])
 @TestPropertySource(
+    "classpath:application.properties",
     "classpath:application-dev.properties",
 )
 open class BaseChatgptTest {
@@ -21,9 +23,13 @@ open class BaseChatgptTest {
 
     fun initClient(): DefaultChatGptClient {
         return DefaultChatGptClient(
-            properties, ChatgptCfg().chatgptOkHttpClient(properties)
+            ChatgptCfg().chatgptOkHttpClient(properties), ChatLoadBalanceImpl(properties)
         )
+    }
 
+    @Test
+    fun `test properties`() {
+        println(properties)
     }
 
 }
