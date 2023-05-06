@@ -17,6 +17,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test:")
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
     implementation("com.slack.api:bolt-jakarta-servlet:$slackVersion")
+    implementation("com.google.guava:guava:31.1-jre")
 }
 
 

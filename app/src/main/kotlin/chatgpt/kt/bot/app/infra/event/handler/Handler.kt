@@ -13,8 +13,10 @@ import com.slack.api.bolt.App
 import com.slack.api.methods.request.chat.ChatUpdateRequest
 import com.slack.api.methods.request.users.UsersInfoRequest
 import com.slack.api.model.User
+import com.slack.api.rate_limits.RateLimiter
 import mu.KotlinLogging
 import org.springframework.stereotype.Component
+import java.util.concurrent.TimeUnit
 
 sealed interface Handler {
     fun hande(event: SlackEvent): Boolean
@@ -117,6 +119,8 @@ class SlackBaseImpl(
 ) : SlackBase {
     private val slack = Slack.getInstance()
     private val responder = SlashCommandResponseSender(slack)
+    private val rateLimiter = com.google.common.util.concurrent.RateLimiter.create(50.0, 1, TimeUnit.MINUTES)
+
 
     private val log = KotlinLogging.logger { }
     override fun findUser(user: String): User {
@@ -135,6 +139,7 @@ class SlackBaseImpl(
     }
 
     override fun edit(channel: String, text: String, ts: String?): String {
+        rateLimiter.acquire()
         return if (ts == null) {
             val response = app.client.chatPostMessage { r -> r.channel(channel).text(text) }
             if (!response.isOk) {
