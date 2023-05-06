@@ -10,6 +10,7 @@ import com.slack.api.Slack
 import com.slack.api.app_backend.slash_commands.SlashCommandResponseSender
 import com.slack.api.app_backend.slash_commands.response.SlashCommandResponse
 import com.slack.api.bolt.App
+import com.slack.api.methods.request.chat.ChatUpdateRequest
 import com.slack.api.methods.request.users.UsersInfoRequest
 import com.slack.api.model.User
 import mu.KotlinLogging
@@ -27,6 +28,8 @@ sealed interface Handler {
 interface ChatBase {
 
     fun completions(sessionId: String, q: String, role: Role = Role.USER): String
+
+    fun completionsSSE(sessionId: String, q: String, role: Role = Role.USER, sender: (text: String) -> Unit)
 
     fun completions(messages: List<Message>): String
 
@@ -51,7 +54,7 @@ class ChatBaseImpl(
             m.content
         } catch (e: Exception) {
             log.error { "request gpt failed! ${e.printStackTrace()}" }
-            "机器人开始摆烂..."
+            DEFAULT_MSG
         }
     }
 
@@ -60,8 +63,36 @@ class ChatBaseImpl(
             chatGptClient.completions(messages).content
         } catch (e: Exception) {
             log.error { "completions error $e" }
-            "机器人开始摆烂..."
+            DEFAULT_MSG
         }
+    }
+
+    override fun completionsSSE(sessionId: String, q: String, role: Role, sender: (text: String) -> Unit) {
+        try {
+            chatSessionDao.with(
+                sessionId,
+                q,
+                role
+            ) { it ->
+                val seq = chatGptClient.completionsSSE(it)
+                var content = ""
+                seq.iterator().forEach { resp ->
+                    resp.choices[0].delta?.content?.also {
+                        content += it
+                        sender.invoke(content)
+                    }
+                }
+                Message(role.value, content)
+            }
+
+        } catch (e: Exception) {
+            log.error { "request gpt failed! $e" }
+        }
+    }
+
+
+    companion object {
+        const val DEFAULT_MSG = "机器人开始摆烂..."
     }
 
 }
@@ -72,6 +103,8 @@ interface SlackBase {
 
     fun send(channel: String, text: String)
 
+    fun edit(channel: String, text: String)
+
 
     fun sendByCmd(responseUrl: String, reply: String)
 
@@ -80,7 +113,7 @@ interface SlackBase {
 @Component
 class SlackBaseImpl(
     private val app: App,
-    private val slackProperties: SlackProperties
+    private val slackProperties: SlackProperties,
 ) : SlackBase {
     private val slack = Slack.getInstance()
     private val responder = SlashCommandResponseSender(slack)
@@ -101,6 +134,17 @@ class SlackBaseImpl(
         }
     }
 
+    override fun edit(channel: String, text: String) {
+        val q = ChatUpdateRequest.builder()
+            .channel(channel)
+            .text(text)
+            .build()
+        val resp = app.client.chatUpdate(q)
+        if (!resp.isOk) {
+            log.error { "chat.Update failed: $channel, $text, ${resp.error}" }
+        }
+    }
+
     override fun sendByCmd(responseUrl: String, reply: String) {
         val response = responder.send(
             responseUrl,
@@ -118,7 +162,7 @@ enum class Kind(
     val prefix: String,
     val description: String,
     val isSlackCmd: Boolean,
-    val shouldDisplay: Boolean
+    val shouldDisplay: Boolean,
 ) {
     ASK("/ask", "不包含上下文的提问", true, true),
     CHAT("", "包含上下文的对话", false, false),
