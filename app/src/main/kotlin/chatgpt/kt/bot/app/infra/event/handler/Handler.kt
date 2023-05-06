@@ -29,7 +29,7 @@ interface ChatBase {
 
     fun completions(sessionId: String, q: String, role: Role = Role.USER): String
 
-    fun completionsSSE(sessionId: String, q: String, role: Role = Role.USER, sender: (text: String) -> Unit)
+    fun completionsSSE(sessionId: String, q: String, role: Role = Role.USER, sender: (text: String, idx: Int) -> Unit)
 
     fun completions(messages: List<Message>): String
 
@@ -67,7 +67,7 @@ class ChatBaseImpl(
         }
     }
 
-    override fun completionsSSE(sessionId: String, q: String, role: Role, sender: (text: String) -> Unit) {
+    override fun completionsSSE(sessionId: String, q: String, role: Role, sender: (text: String, idx: Int) -> Unit) {
         try {
             chatSessionDao.with(
                 sessionId,
@@ -76,10 +76,11 @@ class ChatBaseImpl(
             ) { it ->
                 val seq = chatGptClient.completionsSSE(it)
                 var content = ""
+                var count = 0
                 seq.iterator().forEach { resp ->
                     resp.choices[0].delta?.content?.also {
                         content += it
-                        sender.invoke(content)
+                        sender.invoke(content, count++)
                     }
                 }
                 Message(role.value, content)
@@ -103,8 +104,7 @@ interface SlackBase {
 
     fun send(channel: String, text: String)
 
-    fun edit(channel: String, text: String)
-
+    fun edit(channel: String, text: String, ts: String?): String
 
     fun sendByCmd(responseUrl: String, reply: String)
 
@@ -134,15 +134,27 @@ class SlackBaseImpl(
         }
     }
 
-    override fun edit(channel: String, text: String) {
-        val q = ChatUpdateRequest.builder()
-            .channel(channel)
-            .text(text)
-            .build()
-        val resp = app.client.chatUpdate(q)
-        if (!resp.isOk) {
-            log.error { "chat.Update failed: $channel, $text, ${resp.error}" }
+    override fun edit(channel: String, text: String, ts: String?): String {
+        return if (ts == null) {
+            val response = app.client.chatPostMessage { r -> r.channel(channel).text(text) }
+            if (!response.isOk) {
+                log.error { "chat.PostMsg failed: $channel, $text, ${response.error}" }
+                throw RuntimeException("chat.PostMsg failed: $channel, $text, ${response.error}")
+            }
+            response.ts
+        } else {
+            val q = ChatUpdateRequest.builder()
+                .channel(channel)
+                .text(text)
+                .ts(ts)
+                .build()
+            val resp = app.client.chatUpdate(q)
+            if (!resp.isOk) {
+                log.error { "chat.Update failed: $channel, $text, ${resp.error}" }
+            }
+            resp.ts
         }
+
     }
 
     override fun sendByCmd(responseUrl: String, reply: String) {
