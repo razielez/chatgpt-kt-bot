@@ -33,11 +33,15 @@ open class ChatHandler(
                     seq.iterator().forEach { resp ->
                         resp.choices[0].delta?.content?.also { t ->
                             content += t
-                            ts = edit(se.channel, content, ts)
+                            if (content.length % buf == 0) {
+                                ts = edit(se.channel, content, ts)
+                            }
                         }
                     }
+                    ts = edit(se.channel, content, ts)
                     Message(Role.USER.value, content)
                 }
+
             )
         } catch (e: Exception) {
             log.error { "request gpt failed! $e" }
@@ -46,6 +50,9 @@ open class ChatHandler(
         return true
     }
 
+    companion object {
+        const val buf = 5
+    }
 
     override fun kind() = Kind.CHAT
 }
