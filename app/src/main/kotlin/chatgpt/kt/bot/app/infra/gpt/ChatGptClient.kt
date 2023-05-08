@@ -18,7 +18,8 @@ interface ChatGptClient {
 
 data class Message(
     @JsonProperty("role") val role: String,
-    @JsonProperty("content") val content: String
+    @JsonProperty("content") val content: String,
+    @JsonIgnore val ts: Long = System.currentTimeMillis(),
 ) : Serializable {
 
     @get:JsonIgnore

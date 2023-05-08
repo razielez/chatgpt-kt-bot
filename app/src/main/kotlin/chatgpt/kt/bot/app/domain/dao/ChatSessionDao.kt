@@ -10,6 +10,8 @@ interface ChatSessionDao {
 
     fun byId(id: String): ChatSession
 
+    fun all():List<ChatSession>
+
     fun clear(id: String): ChatSession?
 
     fun with(sessionId: String, q: String, role: Role = Role.USER, func: (m: List<Message>) -> Message): Pair<Message, ChatSession> {

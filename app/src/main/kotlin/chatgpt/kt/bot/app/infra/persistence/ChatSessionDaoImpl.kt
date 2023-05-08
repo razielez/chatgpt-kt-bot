@@ -17,12 +17,12 @@ import kotlin.io.path.Path
 
 @Repository
 open class ChatSessionDaoImpl(
-    @Value("\${chatgpt.session.dir}") val sessionPath: String
+    @Value("\${chatgpt.session.dir}") val sessionPath: String,
 ) : ChatSessionDao, InitializingBean, DisposableBean {
 
     private val map = ConcurrentHashMap<String, ChatSession>(5)
 
-    private val log = KotlinLogging.logger {  }
+    private val log = KotlinLogging.logger { }
 
     private lateinit var persisPath: Path
 
@@ -35,12 +35,20 @@ open class ChatSessionDaoImpl(
         return map[id] ?: ChatSession.of(id)
     }
 
+    override fun all(): List<ChatSession> {
+        return map.values.toList()
+    }
+
     override fun clear(id: String): ChatSession? {
         log.info { "remove session $id" }
         return map.remove(id)
     }
 
     override fun afterPropertiesSet() {
+        registerLoadSession()
+    }
+
+    private fun registerLoadSession() {
         persisPath = Path(sessionPath, "session.json")
         if (Files.exists(persisPath)) {
             Files.lines(persisPath).forEach {
@@ -51,6 +59,10 @@ open class ChatSessionDaoImpl(
     }
 
     override fun destroy() {
+        registerPersisSession()
+    }
+
+    private fun registerPersisSession() {
         if (Files.exists(persisPath)) {
             val lines = map.values.map { it.toJson() }
             Files.write(persisPath, lines, StandardOpenOption.APPEND)
