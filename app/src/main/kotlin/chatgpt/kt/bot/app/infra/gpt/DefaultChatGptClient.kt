@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component
 
 @Component
 open class DefaultChatGptClient(
+    private val chatGptProperties: ChatGptProperties,
     @Qualifier("chatgptOkHttpClient") private val client: OkHttpClient,
     private val chatLoadBalance: ChatLoadBalance,
 ) : ChatGptClient {
@@ -24,7 +25,7 @@ open class DefaultChatGptClient(
     override fun completions(message: List<Message>): Message {
         return runBlocking {
             Retry.withBackoff {
-                val q = buildRequest(buildPostBody(message), chatLoadBalance.get().v)
+                val q = buildRequest(chatGptProperties.endpoint, buildPostBody(message), chatLoadBalance.get().v)
                 val now = System.currentTimeMillis()
                 val response = client.newCall(q).execute()
                 response.use {
@@ -43,7 +44,7 @@ open class DefaultChatGptClient(
     }
 
     override fun completionsSSE(message: List<Message>): Sequence<CompletionResp> = sequence {
-        val q = buildRequest(buildStreamBody(message), chatLoadBalance.get().v)
+        val q = buildRequest(chatGptProperties.endpoint, buildStreamBody(message), chatLoadBalance.get().v)
         val response = client.newCall(q).execute()
         response.use { it ->
             if (!response.isSuccessful) {
@@ -85,9 +86,9 @@ open class DefaultChatGptClient(
     }
 
 
-    private fun buildRequest(body: String, token: String): Request {
+    private fun buildRequest(endpoint: String, body: String, token: String): Request {
         return Request.Builder()
-            .url("$BASE_URL/chat/completions")
+            .url("$endpoint/chat/completions")
             .post(body.toRequestBody())
             .header("Content-Type", "application/json")
             .header("Authorization", "Bearer $token")
@@ -104,7 +105,6 @@ open class DefaultChatGptClient(
     }
 
     companion object {
-        const val BASE_URL = "https://api.openai.com/v1"
         const val MAX_TOKEN = 2048
         const val TEMPERATURE = 0.7f
         const val DELTA_PREFIX = "data: "

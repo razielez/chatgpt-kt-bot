@@ -65,12 +65,12 @@ data class CompletionReq(
 
 
 data class CompletionResp(
-    @JsonProperty("id") val id: String,
-    @JsonProperty("object") val objectStr: String,
+    @JsonProperty("id") val id: String?,
+    @JsonProperty("object") val objectStr: String?,
     @JsonProperty("created") val createTs: Int,
     @JsonProperty("model") val model: String,
     @JsonProperty("choices") val choices: List<ChoiceItem>,
-    @JsonProperty("usage") val usage: Map<String, Any>
+    @JsonProperty("usage") val usage: Map<String, Any?>?
 ) : Serializable
 
 data class ChoiceItem(

@@ -2,8 +2,9 @@ package chatgpt.kt.bot.app.infra.gpt
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 
-@ConfigurationProperties(prefix = "openai")
+@ConfigurationProperties(prefix = "chatgpt")
 data class ChatGptProperties(
+    var endpoint: String,
     var token: Token,
     var proxyAddr: String?,
     var timeout: Long? = 120,
