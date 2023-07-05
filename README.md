@@ -7,12 +7,24 @@ a chatgpt bot for slack.
 - `gradle`
 
 ```shell
-./gradlew clean build  -q -x test               
+$ just help
+Available recipes:
+    help
+    clean
+    build
+    b      # alias for `build`
+    run
+    deploy
+    d      # alias for `deploy`
+
+$ just build
+$ just run
 ```
+
 
 ## Roadmap
 
-- [ ] message persistence
+- [x] message persistence
 - [ ] admin command
 
 ## Ref

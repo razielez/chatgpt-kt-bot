@@ -20,10 +20,9 @@ open class BaseChatgptTest {
 
     @Autowired
     private lateinit var properties: ChatGptProperties
-
     fun initClient(): DefaultChatGptClient {
         return DefaultChatGptClient(
-            ChatgptCfg().chatgptOkHttpClient(properties), ChatLoadBalanceImpl(properties)
+            properties, ChatgptCfg().chatgptOkHttpClient(properties), ChatLoadBalanceImpl(properties)
         )
     }
 
