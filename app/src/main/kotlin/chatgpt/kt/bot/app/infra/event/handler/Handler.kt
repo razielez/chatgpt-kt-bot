@@ -139,15 +139,13 @@ class SlackBaseImpl(
     }
 
     override fun edit(channel: String, text: String, ts: String?): String {
-        if (text.isBlank()) {
-            return ""
-        }
         rateLimiter.acquire()
         return if (ts == null) {
-            val response = app.client.chatPostMessage { r -> r.channel(channel).text(text) }
+            val t = text.ifBlank { " " }
+            val response = app.client.chatPostMessage { r -> r.channel(channel).text(t) }
             if (!response.isOk) {
-                log.error { "chat.PostMsg failed: $channel, $text, ${response.error}" }
-                throw RuntimeException("chat.PostMsg failed: $channel, $text, ${response.error}")
+                log.error { "chat.PostMsg failed: $channel, $t, ${response.error}" }
+                throw RuntimeException("chat.PostMsg failed: $channel, $t, ${response.error}")
             }
             response.ts
         } else {
