@@ -70,6 +70,7 @@ open class DefaultChatGptClient(
                     break
                 }
                 val resp = JsonTools.fromJson(t, CompletionResp::class.java)
+                log.debug { "chat msg: ${resp.choices[0].delta?.content}" }
                 yield(resp)
             }
         }
@@ -77,7 +78,7 @@ open class DefaultChatGptClient(
 
     private fun buildStreamBody(message: List<Message>): String {
         return CompletionReq(
-            model = Model.GPT4.value,
+            model = Model.GPT4_0.value,
             message = message,
             maxToken = MAX_TOKEN,
             temperature = TEMPERATURE,

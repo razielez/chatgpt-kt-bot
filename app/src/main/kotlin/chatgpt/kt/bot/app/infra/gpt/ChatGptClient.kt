@@ -83,6 +83,7 @@ data class ChoiceItem(
 enum class Model(val value: String) {
     GPT3_5_TURBO("gpt-3.5-turbo"),
     GPT4("gpt-4"),
+    GPT4_0("gpt-4-0613"),
     ;
 }
 

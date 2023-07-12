@@ -139,6 +139,9 @@ class SlackBaseImpl(
     }
 
     override fun edit(channel: String, text: String, ts: String?): String {
+        if (text.isBlank()) {
+            return ""
+        }
         rateLimiter.acquire()
         return if (ts == null) {
             val response = app.client.chatPostMessage { r -> r.channel(channel).text(text) }
