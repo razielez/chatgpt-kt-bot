@@ -77,7 +77,7 @@ open class DefaultChatGptClient(
 
     private fun buildStreamBody(message: List<Message>): String {
         return CompletionReq(
-            model = Model.GPT3_5_TURBO.value,
+            model = Model.GPT4.value,
             message = message,
             maxToken = MAX_TOKEN,
             temperature = TEMPERATURE,
