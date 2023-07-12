@@ -140,8 +140,8 @@ class SlackBaseImpl(
 
     override fun edit(channel: String, text: String, ts: String?): String {
         rateLimiter.acquire()
+        val t = text.ifBlank { " " }
         return if (ts == null) {
-            val t = text.ifBlank { " " }
             val response = app.client.chatPostMessage { r -> r.channel(channel).text(t) }
             if (!response.isOk) {
                 log.error { "chat.PostMsg failed: $channel, $t, ${response.error}" }
@@ -151,12 +151,12 @@ class SlackBaseImpl(
         } else {
             val q = ChatUpdateRequest.builder()
                 .channel(channel)
-                .text(text)
+                .text(t)
                 .ts(ts)
                 .build()
             val resp = app.client.chatUpdate(q)
             if (!resp.isOk) {
-                log.error { "chat.Update failed: $channel, $text, ${resp.error}" }
+                log.error { "chat.Update failed: $channel, $t, ${resp.error}" }
             }
             resp.ts
         }
