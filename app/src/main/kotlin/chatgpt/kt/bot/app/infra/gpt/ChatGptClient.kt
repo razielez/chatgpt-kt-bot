@@ -1,5 +1,6 @@
 package chatgpt.kt.bot.app.infra.gpt
 
+import chatgpt.kt.bot.app.domain.ChatSessionMessage
 import chatgpt.kt.bot.app.infra.common.Serializable
 import chatgpt.kt.bot.app.infra.common.toJson
 import com.fasterxml.jackson.annotation.JsonIgnore
@@ -27,6 +28,14 @@ data class Message(
 
     init {
         length = toJson().length
+    }
+
+    fun toChatMessage():ChatSessionMessage {
+        return ChatSessionMessage(
+            role,
+            content,
+            ts
+        )
     }
 
     companion object {

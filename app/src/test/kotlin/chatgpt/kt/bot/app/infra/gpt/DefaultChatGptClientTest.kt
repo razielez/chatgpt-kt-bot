@@ -102,7 +102,7 @@ internal class DefaultChatGptClientTest : BaseChatgptTest() {
     fun `test completions seq`() {
         //client.completions(listOf(Message("user","请把核心主义社会价值观翻译成英文?")))
         val now = System.currentTimeMillis()
-        val resp = client.completionsSSE(listOf(Message("user", "你好 请问你是GPT-4模型吗?")))
+        val resp = client.completionsSSE(listOf(Message("user", "请问你是GPT-4模型吗?")))
         val msg = Message.of(Role.ASSISTANT, resp)
         println("cost: ${System.currentTimeMillis() - now} ms")
         println("The answer is: ${msg.content}")

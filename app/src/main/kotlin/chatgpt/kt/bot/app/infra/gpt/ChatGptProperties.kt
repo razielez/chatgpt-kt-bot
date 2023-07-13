@@ -8,6 +8,7 @@ data class ChatGptProperties(
     var token: Token,
     var proxyAddr: String?,
     var timeout: Long? = 120,
+    var useGpt4Prefix: String? = null,
 )
 
 data class Token(

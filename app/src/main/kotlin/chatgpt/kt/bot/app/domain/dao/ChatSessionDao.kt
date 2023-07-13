@@ -10,7 +10,7 @@ interface ChatSessionDao {
 
     fun byId(id: String): ChatSession
 
-    fun all():List<ChatSession>
+    fun all(): List<ChatSession>
 
     fun clear(id: String): ChatSession?
 
@@ -18,7 +18,7 @@ interface ChatSessionDao {
         val session = byId(sessionId)
         session.append(Message(role.value, q))
         val result = try {
-            func.invoke(session.messages)
+            func.invoke(session.messages.map { it.toMessage() })
         } catch (e: Exception) {
             session.messages.removeLast()
             throw e

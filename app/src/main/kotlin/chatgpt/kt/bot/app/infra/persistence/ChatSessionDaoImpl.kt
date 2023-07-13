@@ -55,6 +55,7 @@ open class ChatSessionDaoImpl(
                 val session = JsonTools.fromJson(it, ChatSession::class.java)
                 map[session.sessionId] = session
             }
+            log.info { "load session size: ${map.size}" }
         }
     }
 
@@ -63,9 +64,8 @@ open class ChatSessionDaoImpl(
     }
 
     private fun registerPersisSession() {
-        if (Files.exists(persisPath)) {
-            val lines = map.values.map { it.toJson() }
-            Files.write(persisPath, lines, StandardOpenOption.APPEND)
-        }
+        val lines = map.values.map { it.toJson() }
+        Files.write(persisPath, lines, StandardOpenOption.APPEND, StandardOpenOption.CREATE)
+        log.info { "persis session size: ${lines.size}" }
     }
 }

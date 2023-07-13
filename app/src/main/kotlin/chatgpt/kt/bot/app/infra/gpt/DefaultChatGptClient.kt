@@ -44,7 +44,18 @@ open class DefaultChatGptClient(
     }
 
     override fun completionsSSE(message: List<Message>): Sequence<CompletionResp> = sequence {
-        val q = buildRequest(chatGptProperties.endpoint, buildStreamBody(message), chatLoadBalance.get().v)
+        if (message.isEmpty()) {
+            return@sequence
+        }
+        val useModel = chatGptProperties.useGpt4Prefix?.let {
+            if (message[0].content.trim().startsWith(it)) {
+                Model.GPT4_0
+            } else {
+                Model.GPT3_5_TURBO
+            }
+        } ?: Model.GPT3_5_TURBO
+        log.info { "q0: ${message[0].content}, use model: $useModel" }
+        val q = buildRequest(chatGptProperties.endpoint, buildStreamBody(message, useModel), chatLoadBalance.get().v)
         val response = client.newCall(q).execute()
         response.use { it ->
             if (!response.isSuccessful) {
@@ -76,9 +87,9 @@ open class DefaultChatGptClient(
         }
     }
 
-    private fun buildStreamBody(message: List<Message>): String {
+    private fun buildStreamBody(message: List<Message>, useModel:Model): String {
         return CompletionReq(
-            model = Model.GPT4_0.value,
+            model = useModel.value,
             message = message,
             maxToken = MAX_TOKEN,
             temperature = TEMPERATURE,
