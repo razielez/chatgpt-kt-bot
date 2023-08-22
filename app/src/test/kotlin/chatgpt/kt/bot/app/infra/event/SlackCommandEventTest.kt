@@ -1,6 +1,7 @@
 package chatgpt.kt.bot.app.infra.event
 
-import chatgpt.kt.bot.app.infra.event.handler.Kind
+import com.razielez.chatgpt.app.infra.event.SlackChatEvent
+import com.razielez.chatgpt.app.infra.event.handler.Kind
 import org.junit.jupiter.api.Test
 
 class SlackCommandEventTest {

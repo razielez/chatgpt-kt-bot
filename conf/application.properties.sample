@@ -1,0 +1,11 @@
+server.port=10003
+# ======= slack =========
+slack.bot-token=${SLACK_BOT_TOKEN}
+slack.signing-secret=${SLACK_SIGNING_SECRET}
+#  ======== openai =========
+chatgpt.endpoint=${CHATGPT_ENDPOINT}
+chatgpt.use-gpt4-prefix=\u8bf7
+chatgpt.token.v=${OPENAI_TOKEN}
+#: logger
+logging.level.root=INFO
+chatgpt.session.dir=${HOME}/tmp/chat-gpt-bot/
