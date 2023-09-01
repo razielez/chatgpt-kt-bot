@@ -22,4 +22,4 @@ native: clean
     ./gradlew :app:nativeCompile
 
 run-native:
-    ./app/build/native/nativeCompile/app --spring.config.location=file:///${PWD}/conf/application.properties"
+    ./app/build/native/nativeCompile/app --spring.config.location=file:///`pwd`/conf/application.properties"
