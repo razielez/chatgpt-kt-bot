@@ -16,7 +16,7 @@ import mu.KotlinLogging
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 open class SlackAppConfig(
     private val eventPublisher: EventPublisher<SlackEvent>,
     private val properties: SlackProperties,

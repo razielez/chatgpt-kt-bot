@@ -8,7 +8,7 @@ import kotlinx.coroutines.channels.Channel
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 open class ContextCfg {
 
 

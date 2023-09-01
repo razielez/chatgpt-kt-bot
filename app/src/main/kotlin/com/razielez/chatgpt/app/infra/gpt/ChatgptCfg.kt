@@ -7,11 +7,11 @@ import java.net.InetSocketAddress
 import java.net.Proxy
 import java.time.Duration
 
-@Configuration
-open class ChatgptCfg {
+@Configuration(proxyBeanMethods = false)
+class ChatgptCfg {
 
     @Bean
-    open fun chatgptOkHttpClient(properties: ChatGptProperties): OkHttpClient {
+    fun chatgptOkHttpClient(properties: ChatGptProperties): OkHttpClient {
         val timeout = properties.timeout!!
         val b = OkHttpClient().newBuilder()
             .callTimeout(Duration.ofMinutes(timeout))
@@ -23,5 +23,10 @@ open class ChatgptCfg {
             b.proxy(Proxy(Proxy.Type.SOCKS, InetSocketAddress(proxy[0], proxy[1].toInt())))
         }
         return b.build()
+    }
+
+    @Bean
+    fun chatGptProperties(): ChatGptProperties {
+        return ChatGptProperties()
     }
 }
