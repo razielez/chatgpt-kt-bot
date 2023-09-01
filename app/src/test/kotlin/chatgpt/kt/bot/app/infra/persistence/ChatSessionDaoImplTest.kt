@@ -1,9 +1,10 @@
 package chatgpt.kt.bot.app.infra.persistence
 
 import chatgpt.kt.bot.app.infra.gpt.BaseChatgptTest
-import chatgpt.kt.bot.app.infra.gpt.DefaultChatGptClient
-import chatgpt.kt.bot.app.infra.gpt.Message
-import chatgpt.kt.bot.app.infra.gpt.Role
+import com.razielez.chatgpt.app.infra.gpt.DefaultChatGptClient
+import com.razielez.chatgpt.app.infra.gpt.Message
+import com.razielez.chatgpt.app.infra.gpt.Role
+import com.razielez.chatgpt.app.infra.persistence.ChatSessionDaoImpl
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 

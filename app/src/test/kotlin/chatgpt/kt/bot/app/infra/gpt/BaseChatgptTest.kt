@@ -1,8 +1,9 @@
 package chatgpt.kt.bot.app.infra.gpt
 
-import chatgpt.kt.bot.app.infra.gpt.ChatGptProperties
-import chatgpt.kt.bot.app.infra.gpt.ChatgptCfg
-import chatgpt.kt.bot.app.infra.gpt.DefaultChatGptClient
+import com.razielez.chatgpt.app.infra.gpt.ChatGptProperties
+import com.razielez.chatgpt.app.infra.gpt.ChatLoadBalanceImpl
+import com.razielez.chatgpt.app.infra.gpt.ChatgptCfg
+import com.razielez.chatgpt.app.infra.gpt.DefaultChatGptClient
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired

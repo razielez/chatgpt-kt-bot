@@ -1,5 +1,6 @@
 package chatgpt.kt.bot.app.infra.event.handler
 
+import com.razielez.chatgpt.app.infra.event.handler.TranslateAction
 import org.junit.jupiter.api.Test
 
 class TranslateActionTest {

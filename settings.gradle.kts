@@ -1,0 +1,2 @@
+rootProject.name = "chatgpt-kt-bot"
+include("app")

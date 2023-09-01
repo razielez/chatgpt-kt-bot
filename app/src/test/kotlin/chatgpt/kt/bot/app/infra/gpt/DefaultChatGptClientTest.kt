@@ -1,8 +1,9 @@
 package chatgpt.kt.bot.app.infra.gpt
 
-import chatgpt.kt.bot.app.infra.event.handler.TranslateAction
-import chatgpt.kt.bot.app.infra.utils.JsonTools
+import com.razielez.chatgpt.app.infra.event.handler.TranslateAction
+import com.razielez.chatgpt.app.infra.utils.JsonTools
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.razielez.chatgpt.app.infra.gpt.*
 import okio.buffer
 import okio.source
 import org.junit.jupiter.api.BeforeEach
