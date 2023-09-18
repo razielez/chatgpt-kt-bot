@@ -1,10 +1,10 @@
 package com.razielez.chatgpt.app.infra.gpt
 
 import com.razielez.chatgpt.app.domain.ChatSessionMessage
-import com.razielez.chatgpt.app.infra.common.Serializable
+import com.razielez.chatgpt.app.infra.common.InternalSerializable
 import com.razielez.chatgpt.app.infra.common.toJson
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonProperty
+import kotlinx.serialization.SerialName
 import kotlin.properties.Delegates
 
 interface ChatGptClient {
@@ -18,10 +18,10 @@ interface ChatGptClient {
 
 
 data class Message(
-    @JsonProperty("role") val role: String,
-    @JsonProperty("content") val content: String,
+    @SerialName("role") val role: String,
+    @SerialName("content") val content: String,
     @JsonIgnore val ts: Long = System.currentTimeMillis(),
-) : Serializable {
+) : InternalSerializable {
 
     @get:JsonIgnore
     var length by Delegates.notNull<Int>()
@@ -57,37 +57,37 @@ data class Message(
 fun List<Message>.tokenLen(): Int = this.sumOf { it.length }
 
 data class Delta(
-    @JsonProperty("role") val role: String?,
-    @JsonProperty("content") val content: String?
+    @SerialName("role") val role: String?,
+    @SerialName("content") val content: String?
 )
 
 data class CompletionReq(
-    @JsonProperty("model") val model: String,
-    @JsonProperty("messages") val message: List<Message>,
-    @JsonProperty("max_tokens") val maxToken: Int,
-    @JsonProperty("temperature") val temperature: Float,
-    @JsonProperty("top_p") val topP: Int = 1,
-    @JsonProperty("stream") val stream: Boolean = false,
-    @JsonProperty("frequency_penalty") val frequencyPenalty: Int = 0,
-    @JsonProperty("presence_penalty") val presencePenalty: Int = 0,
-) : Serializable
+    @SerialName("model") val model: String,
+    @SerialName("messages") val message: List<Message>,
+    @SerialName("max_tokens") val maxToken: Int,
+    @SerialName("temperature") val temperature: Float,
+    @SerialName("top_p") val topP: Int = 1,
+    @SerialName("stream") val stream: Boolean = false,
+    @SerialName("frequency_penalty") val frequencyPenalty: Int = 0,
+    @SerialName("presence_penalty") val presencePenalty: Int = 0,
+) : InternalSerializable
 
 
 data class CompletionResp(
-    @JsonProperty("id") val id: String?,
-    @JsonProperty("object") val objectStr: String?,
-    @JsonProperty("created") val createTs: Int,
-    @JsonProperty("model") val model: String,
-    @JsonProperty("choices") val choices: List<ChoiceItem>,
-    @JsonProperty("usage") val usage: Map<String, Any?>?
-) : Serializable
+    @SerialName("id") val id: String?,
+    @SerialName("object") val objectStr: String?,
+    @SerialName("created") val createTs: Int,
+    @SerialName("model") val model: String,
+    @SerialName("choices") val choices: List<ChoiceItem>,
+    @SerialName("usage") val usage: Map<String, Any?>?
+) : InternalSerializable
 
 data class ChoiceItem(
-    @JsonProperty("message") val message: Message?,
-    @JsonProperty("delta") val delta: Delta?,
-    @JsonProperty("index") val index: Int,
-    @JsonProperty("finish_reason") val finishReason: String?
-) : Serializable
+    @SerialName("message") val message: Message?,
+    @SerialName("delta") val delta: Delta?,
+    @SerialName("index") val index: Int,
+    @SerialName("finish_reason") val finishReason: String?
+) : InternalSerializable
 
 enum class Model(val value: String) {
     GPT3_5_TURBO("gpt-3.5-turbo"),

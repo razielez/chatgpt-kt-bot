@@ -1,17 +1,19 @@
 package com.razielez.chatgpt.app.domain
 
-import com.razielez.chatgpt.app.infra.common.Serializable
+import com.razielez.chatgpt.app.infra.common.InternalSerializable
 import com.razielez.chatgpt.app.infra.common.toJson
 import com.razielez.chatgpt.app.infra.gpt.Message
 import com.fasterxml.jackson.annotation.JsonIgnore
+import kotlinx.serialization.Serializable
 import java.util.*
 import kotlin.properties.Delegates
 
+@Serializable
 data class ChatSessionMessage(
     val role: String,
     val content: String,
     val ts: Long = System.currentTimeMillis(),
-) : Serializable {
+) : InternalSerializable {
     @get:JsonIgnore
     var length by Delegates.notNull<Int>()
 
@@ -30,10 +32,11 @@ data class ChatSessionMessage(
 
 fun List<ChatSessionMessage>.tokenLen(): Int = this.sumOf { it.length }
 
+@Serializable
 class ChatSession(
     val sessionId: String,
     val messages: LinkedList<ChatSessionMessage>,
-) : Serializable {
+) : InternalSerializable {
 
     fun append(message: Message): ChatSession {
         messages.addLast(message.toChatMessage())

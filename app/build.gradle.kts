@@ -1,6 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     id("org.springframework.boot") version "3.1.3"
     id("io.spring.dependency-management") version "1.1.0"
@@ -22,15 +19,16 @@ configurations.all {
 
 dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
-    implementation("com.fasterxml.jackson.core:jackson-databind:")
-    implementation("com.fasterxml.jackson.core:jackson-annotations:")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+//    implementation("com.fasterxml.jackson.core:jackson-databind:")
+//    implementation("com.fasterxml.jackson.core:jackson-annotations:")
+//    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
     implementation("ch.qos.logback:logback-classic:1.4.7")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
     implementation("org.springframework.boot:spring-boot-starter-web:") {
-        exclude(group = "org.apache.tomcat.embed", module ="tomcat-embed-core")
-        exclude(group = "org.apache.tomcat.embed", module="tomcat-embed-websocket")
+        exclude(group = "org.apache.tomcat.embed", module = "tomcat-embed-core")
+        exclude(group = "org.apache.tomcat.embed", module = "tomcat-embed-websocket")
     }
     implementation("org.apache.tomcat.experimental:tomcat-embed-programmatic:${dependencyManagement.importedProperties["tomcat.version"]}")
     testImplementation("org.springframework.boot:spring-boot-starter-test:")
@@ -58,9 +56,9 @@ tasks.withType<Test> {
 //    mainClass.set("com.razielez.app.AppKt")
 //}
 
-//tasks.named<BootJar>("bootJar") {
-//    archiveFileName.set("chatgpt-kt-bot.jar")
-//}
+tasks.named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
+    archiveFileName.set("chatgpt-kt-bot.jar")
+}
 
 
 tasks.named<Test>("test") {
