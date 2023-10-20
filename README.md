@@ -5,7 +5,6 @@ a chatgpt bot for slack.
 ## Build
 - `jdk17`
 - `gradle`
-- ~~`graalvm`~~
 
 ```shell
 $ just help
