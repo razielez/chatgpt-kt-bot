@@ -23,6 +23,5 @@ $ just build
 $ just run
 ```
 
-
 ## Ref
 - [openai doc](https://platform.openai.com/docs/api-reference/chat/create)
