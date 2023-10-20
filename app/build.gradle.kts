@@ -13,11 +13,7 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
     implementation("ch.qos.logback:logback-classic:1.4.7")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
-    implementation("org.springframework.boot:spring-boot-starter-web:") {
-        exclude(group = "org.apache.tomcat.embed", module = "tomcat-embed-core")
-        exclude(group = "org.apache.tomcat.embed", module = "tomcat-embed-websocket")
-    }
-    implementation("org.apache.tomcat.experimental:tomcat-embed-programmatic:${dependencyManagement.importedProperties["tomcat.version"]}")
+    implementation("org.springframework.boot:spring-boot-starter-web:")
     testImplementation("org.springframework.boot:spring-boot-starter-test:")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     implementation("com.slack.api:bolt-jakarta-servlet:1.30.0")
