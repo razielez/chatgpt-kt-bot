@@ -1,9 +1,9 @@
 plugins {
-    id("org.springframework.boot") version "3.1.3"
-    id("io.spring.dependency-management") version "1.1.0"
-    kotlin("jvm") version "1.8.20"
-    kotlin("plugin.spring") version "1.8.20"
-    kotlin("plugin.serialization") version "1.8.20"
+    id("org.springframework.boot")
+    id("io.spring.dependency-management")
+    kotlin("jvm")
+    kotlin("plugin.spring")
+    kotlin("plugin.serialization")
 }
 
 
@@ -18,8 +18,8 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     implementation("com.slack.api:bolt-jakarta-servlet:1.30.0")
     implementation("com.google.guava:guava:31.1-jre")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.0")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:")
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
 }
 
@@ -30,6 +30,12 @@ tasks.withType<Test> {
 
 tasks.named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
     archiveFileName.set("chatgpt-kt-bot.jar")
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
 }
 
 

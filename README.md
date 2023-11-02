@@ -3,7 +3,7 @@
 a chatgpt bot for slack.
 
 ## Build
-- `jdk17`
+- `jdk21`
 - `gradle`
 
 ```shell
