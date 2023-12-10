@@ -20,7 +20,7 @@ fi
 
 LIB_HOME="$APP_HOME/BOOT-INF/lib/*"
 APP_CONF="$APP_HOME/config/application.properties"
-JVM_OPTIONS="-Xms128m -Xmx128m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:10009"
+JVM_OPTIONS="-Xms64m -Xmx64m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:10009"
 
 cd "$APP_HOME"
 
